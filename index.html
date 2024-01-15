@@ -17,16 +17,39 @@
         }
 
         header {
-            background-color: #333;
-            color: white;
+            display: flex;
+	    text-align: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #f2f2f2;
             padding: 20px;
-            text-align: center;
+            border-bottom: 1px solid #ddd;
+            z-index: 1000;
+        }
+
+        header img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+        }
+
+        header div {
+            text-align: right;
+        }
+
+        header h1,
+        header p {
+            margin: 0;
         }
 
         main {
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
+	    margin-top: 80px; 
             padding: 20px;
         }
 
