@@ -78,7 +78,7 @@
 let backtotop = select('.back-to-top')
 let downloadResume = select('.download-resume-btn')
 
-if (backtotop || downloadResume) {
+if (backtotop) {
   const toggleFloatingButtons = () => {
     if (window.scrollY > 100) {
       if (backtotop) backtotop.classList.add('active')
