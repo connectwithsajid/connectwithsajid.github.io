@@ -111,7 +111,13 @@
   <section id="hero" class="d-flex flex-column justify-content-center align-items-center">
     <div class="hero-container" data-aos="fade-in">
       <h1>Sajid Shaikh</h1>
+     
       <p>I'm <span class="typed" data-typed-items="Software Developer, Data Engineer, Tech Analyst, Multimedia Designer"></span></p>
+    
+      <a href="assets/pdf/Sajid_MLE.pdf" target="_blank"
+      class="btn btn-primary download-resume">
+        <i class="fas fa-download me-2"></i> Download Resume
+      </a>
     </div>
   </section><!-- End Hero -->
 
@@ -1205,18 +1211,28 @@ design to enhance user experience and functionality by 30%.</li>
           </div>
 
           <script src="https://topmate-embed.s3.ap-south-1.amazonaws.com/v1/topmate-embed.js"
-                  user-profile="https://topmate.io/embed/profile/connectwithsajid?theme=D5534D"
-                  btn-style='{"backgroundColor":"#000","color":"#fff","border":"1px solid #000"}'
-                  embed-version="v1"
-                  button-text="Let's Connect"
-                  position-right="30px"
-                  position-bottom="30px"
-                  custom-padding="0px"
-                  custom-font-size="16px"
-                  custom-font-weight="500"
-                  custom-width="200px"
-                  async=""new
-                  defer=""></script>
+          id="topmate-script"
+          async defer></script>
+  
+          <div id="topmate-center-container"></div>
+          <script>
+            window.addEventListener('load', function() {
+              if (window.Topmate) {
+                Topmate.init({
+                  container: "#topmate-center-container", // attach button here
+                  userProfile: "https://topmate.io/embed/profile/connectwithsajid?theme=D5534D",
+                  buttonText: "Let's Connect",
+                  btnStyle: {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    border: "1px solid #000"
+                  }
+                });
+              }
+            });
+            </script>
+            
+
 
       </section><!-- End Services Section -->
       <!-- ======= Testimonials Section ======= -->
@@ -1391,6 +1407,15 @@ design to enhance user experience and functionality by 30%.</li>
   </footer><!-- End  Footer -->
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  
+  
+<!-- Download Resume Button -->
+<a href="assets/pdf/Sajid_MLE.pdf" target="_blank"
+   class="download-resume-btn d-flex align-items-center justify-content-center"
+   download aria-label="Download Resume">
+  <i class="bi bi-download"></i> Resume
+</a>
+
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>

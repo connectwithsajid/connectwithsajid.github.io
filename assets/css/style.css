@@ -15,12 +15,12 @@ body {
 }
 
 a {
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
   text-decoration: none;
 }
 
 a:hover {
-  color: #37b3ed;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
   text-decoration: none;
 }
 
@@ -34,6 +34,21 @@ h6 {
 }
 
 /*--------------------------------------------------------------
+# Topmate button
+--------------------------------------------------------------*/
+/* Center the Topmate button at the bottom */
+#topmate-center-container {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+}
+
+linear-gradient(45deg, #149ddd, #4CAF50);
+
+
+/*--------------------------------------------------------------
 # Back to top button
 --------------------------------------------------------------*/
 .back-to-top {
@@ -43,7 +58,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 996;
-  background: #149ddd;
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
   width: 40px;
   height: 40px;
   border-radius: 50px;
@@ -67,6 +82,118 @@ h6 {
 }
 
 /*--------------------------------------------------------------
+# Download resume fix button
+--------------------------------------------------------------*/
+/* Place this after other CSS so it doesn't get overridden */
+.download-resume {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto 0 auto;
+  padding: 10px 25px;
+  background: linear-gradient(135deg, #149ddd, #2eafec); /* gradient */
+  color: #fff;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.download-resume i {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.download-resume:hover {
+  background: linear-gradient(135deg, #2eafec, #149ddd); /* reverse gradient */
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/*--------------------------------------------------------------
+# Download resume scroll button
+--------------------------------------------------------------*/
+/* Place this after other CSS so it doesn't get overridden */
+.download-resume-btn {
+  position: fixed !important;
+  top: 15px !important;     /* ensure top positioning */
+  right: 15px !important;
+  bottom: auto !important;  /* explicitly clear any bottom value */
+  z-index: 99999;
+
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* hidden by default (match your back-to-top behaviour) */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: transform .35s ease, opacity .35s ease, background .2s ease;
+  pointer-events: none; /* disable clicks while hidden */
+}
+
+/* icon spacing */
+.download-resume-btn i { font-size: 16px; margin-right: 8px; }
+
+/* visible state */
+.download-resume-btn.active {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* hover */
+.download-resume-btn:hover {
+  background: #2eafec;
+}
+
+
+/*--------------------------------------------------------------
+# To glow
+--------------------------------------------------------------*/
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 
+      0 0 5px #149ddd, 
+      0 0 20px #149ddd, 
+      0 0 35px #149ddd;
+  }
+  50% {
+    box-shadow: 
+      0 0 10px #80a1e3,   /* softer light blue */
+      0 0 35px #80a1e3, 
+      0 0 60px #80a1e3;
+  }
+  100% {
+    box-shadow: 
+      0 0 5px #149ddd, 
+      0 0 20px #149ddd, 
+      0 0 35px #149ddd;
+  }
+}
+
+
+.profile img {
+  position: relative; /* Ensures the glow effect stays behind */
+  display: inline-block;
+  animation:  pulseGlow 2s infinite alternate;
+}
+
+
+
+/*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
 #header {
@@ -87,7 +214,7 @@ h6 {
   margin: 15px auto;
   display: block;
   width: 120px;
-  border: 8px solid #2c2f3f;
+  border: 2px solid #b6bde4;
 }
 
 #header .profile h1 {
@@ -122,10 +249,11 @@ h6 {
 }
 
 #header .profile .social-links a:hover {
-  background: #149ddd;
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
   color: #fff;
   text-decoration: none;
 }
+
 
 #main {
   margin-left: 300px;
@@ -202,7 +330,7 @@ h6 {
 .nav-menu .active i,
 .nav-menu .active:focus i,
 .nav-menu li:hover>a i {
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 /* Mobile Navigation */
@@ -215,7 +343,7 @@ h6 {
   font-size: 24px;
   transition: all 0.4s;
   outline: none !important;
-  background-color: #149ddd;
+  background-color: linear-gradient(45deg, #149ddd, #4CAF50);
   color: #fff;
   width: 40px;
   height: 40px;
@@ -281,7 +409,7 @@ h6 {
   color: #fff;
   padding-bottom: 4px;
   letter-spacing: 1px;
-  border-bottom: 3px solid #149ddd;
+  border-bottom: 3px solid linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 @media (min-width: 1024px) {
@@ -334,7 +462,7 @@ section {
   display: block;
   width: 50px;
   height: 3px;
-  background: #149ddd;
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
   bottom: 0;
   left: 0;
 }
@@ -370,7 +498,7 @@ section {
 .about .content ul i {
   font-size: 16px;
   margin-right: 5px;
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
   line-height: 0;
 }
 
@@ -393,7 +521,7 @@ section {
 .facts .count-box i {
   display: block;
   font-size: 44px;
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
   float: left;
   line-height: 0;
 }
@@ -430,7 +558,7 @@ section {
 }
 
 /*--------------------------------------------------------------
-# Akills
+# Skills
 --------------------------------------------------------------*/
 .skills .progress {
   height: 60px;
@@ -463,7 +591,7 @@ section {
   width: 1px;
   height: 10px;
   transition: 0.9s;
-  background-color: #149ddd;
+  background-color: linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 /*--------------------------------------------------------------
@@ -559,7 +687,7 @@ section {
 
 .portfolio #portfolio-flters li:hover,
 .portfolio #portfolio-flters li.filter-active {
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 .portfolio #portfolio-flters li:last-child {
@@ -649,11 +777,11 @@ section {
   height: 12px;
   background-color: #fff;
   opacity: 1;
-  border: 1px solid #149ddd;
+  border: 1px solid linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 .portfolio-details .portfolio-details-slider .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: #149ddd;
+  background-color: linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 .portfolio-details .portfolio-info {
@@ -707,10 +835,10 @@ section {
   justify-content: center;
   width: 54px;
   height: 54px;
-  background: #149ddd;
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
   border-radius: 50%;
   transition: 0.5s;
-  border: 1px solid #149ddd;
+  border: 1px solid linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 .services .icon i {
@@ -724,7 +852,7 @@ section {
 }
 
 .services .icon-box:hover .icon i {
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 .services .title {
@@ -739,7 +867,7 @@ section {
 }
 
 .services .title a:hover {
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 .services .description {
@@ -833,11 +961,11 @@ section {
   height: 12px;
   background-color: #fff;
   opacity: 1;
-  border: 1px solid #149ddd;
+  border: 1px solid linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 .testimonials .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: #149ddd;
+  background-color: linear-gradient(45deg, #149ddd, #4CAF50);
 }
 
 /*--------------------------------------------------------------
@@ -856,7 +984,7 @@ section {
 
 .contact .info i {
   font-size: 20px;
-  color: #149ddd;
+  color: linear-gradient(45deg, #149ddd, #4CAF50);
   float: left;
   width: 44px;
   height: 44px;
@@ -907,14 +1035,14 @@ section {
 }
 
 .contact .info .social-links a:hover {
-  background: #149ddd;
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
   color: #fff;
 }
 
 .contact .info .email:hover i,
 .contact .info .address:hover i,
 .contact .info .phone:hover i {
-  background: #149ddd;
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
   color: #fff;
 }
 
@@ -1002,7 +1130,7 @@ section {
 }
 
 .contact .php-email-form button[type=submit] {
-  background: #149ddd;
+  background: linear-gradient(45deg, #149ddd, #4CAF50);
   border: 0;
   padding: 10px 24px;
   color: #fff;
