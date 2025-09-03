@@ -60,14 +60,9 @@ h6 {
   bottom: 15px;
   z-index: 996;
   background: linear-gradient(45deg, #149ddd, #4CAF50);
-  color: #fff;
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
+  width: 40px;
   height: 40px;
-  /* border-radius: 50px; */
+  border-radius: 50px;
   transition: all 0.4s;
 }
 
@@ -97,7 +92,7 @@ h6 {
   justify-content: center;
   margin: 20px auto 0 auto;
   padding: 10px 25px;
-  background: linear-gradient(135deg, #2eafec, #149ddd)  !important; /* gradient */
+  background: linear-gradient(135deg, #149ddd, #2eafec); /* gradient */
   color: #fff;
   border-radius: 50px;
   font-size: 16px;
