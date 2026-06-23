@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Data-driven software is only as good as the systems that validate it | Sajid Shaikh</title>
+  <meta name="description" content="A build log by Sajid Shaikh on using CI/CD guardrails to keep AI-assisted, data-driven software reliable.">
+  <meta name="author" content="Sajid Shaikh">
+
+  <link href="../../assets/img/ss-favicon.png" rel="icon">
+  <link href="../../assets/img/ss-favicon.png" rel="apple-touch-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="../../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+
+<body class="blog-detail-page">
+  <main class="blog-detail">
+    <a class="blog-back-link" href="../../#blogs"><i class="bi bi-arrow-left"></i> Back to blogs</a>
+
+    <article class="blog-article">
+      <p class="blog-eyebrow">DevOps for Data / Build Log</p>
+      <h1>Data-driven software is only as good as the systems that validate it</h1>
+      <p class="blog-dek">
+        This week was a mix of what I would call vibe coding and disciplined engineering.
+      </p>
+
+      <figure class="blog-figure">
+        <img src="../../assets/img/blog/ci-pipeline.png" alt="GitHub CI pipeline flow with lint, type checks, unit tests, and Docker build before merge">
+      </figure>
+      <hr>
+
+      <h2>Moving fast needs guardrails</h2>
+      <p>
+        I was working on my React project, making backend data changes to improve what shows up on the UI. Things were moving fast: AI-assisted workflows, quick iterations, rapid changes.
+      </p>
+      <p>
+        But speed without guardrails is risky, so we backed it up with a CI pipeline.
+      </p>
+
+      <h2>What every change goes through</h2>
+      <ul class="blog-checklist">
+        <li><strong>Lint checks</strong> for clean, maintainable code.</li>
+        <li><strong>Type checks</strong> for correct logic.</li>
+        <li><strong>Unit tests</strong> for working functionality.</li>
+        <li><strong>Docker build</strong> for production readiness.</li>
+      </ul>
+
+      <p>
+        On the very first run, it caught something I had completely overlooked: unused variables and dead code from my recent changes.
+      </p>
+      <p>
+        Nothing critical. But exactly the kind of issues that silently pile up in fast-moving, AI-assisted development.
+      </p>
+
+      <blockquote>
+        <p>Vibe coding helps you move fast. CI/CD ensures you do not break things while doing it.</p>
+      </blockquote>
+
+      <h2>Why this matters for data-driven apps</h2>
+      <p>
+        In a data-driven application, this matters even more. Cleaner pipelines create more reliable outputs. Fewer silent issues lead to better decisions downstream. Faster iteration becomes possible without compromising quality.
+      </p>
+      <p>
+        This is where DevOps goes beyond engineering. It becomes a foundation for trust in data and systems.
+      </p>
+      <p>
+        Building fast is easy. Building fast and right is where the real craft is.
+      </p>
+
+      <p class="blog-cta">
+        If you are an early-stage startup looking for technical solutions to your business needs, feel free to connect through <a href="https://connectwithsajid.github.io/">connectwithsajid.github.io</a>.
+      </p>
+
+      <ul class="blog-tags">
+        <li>DevOps</li>
+        <li>CI/CD</li>
+        <li>Software Engineering</li>
+        <li>AI</li>
+        <li>Build In Public</li>
+        <li>Data Engineering</li>
+      </ul>
+    </article>
+  </main>
+</body>
+
+</html>

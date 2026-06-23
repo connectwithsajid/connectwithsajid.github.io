@@ -35,7 +35,7 @@
   }
 
   /**
-   * Easy on scroll event listener 
+   * Easy on scroll event listener
    */
   const onscroll = (el, listener) => {
     el.addEventListener('scroll', listener)
@@ -91,6 +91,16 @@ if (backtotop) {
   window.addEventListener('load', toggleFloatingButtons)
   onscroll(document, toggleFloatingButtons)
 }
+
+  /**
+   * Auto-collapse profile console after first landing view
+   */
+  const stackConsole = select('.hero-terminal')
+  if (stackConsole && stackConsole.classList.contains('is-open')) {
+    window.setTimeout(() => {
+      stackConsole.classList.remove('is-open')
+    }, 5000)
+  }
 
   /**
    * Mobile nav toggle
@@ -194,7 +204,7 @@ if (backtotop) {
   });
 
   /**
-   * Initiate portfolio lightbox 
+   * Initiate portfolio lightbox
    */
   const portfolioLightbox = GLightbox({
     selector: '.portfolio-lightbox'
@@ -259,7 +269,7 @@ if (backtotop) {
   });
 
   /**
-   * Initiate Pure Counter 
+   * Initiate Pure Counter
    */
   new PureCounter();
 
