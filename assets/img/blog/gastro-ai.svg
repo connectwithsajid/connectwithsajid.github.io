@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">X-GastroAI medical AI thumbnail</title>
+  <desc id="desc">Abstract medical AI interface with gastric screening, model confidence, and Grad-CAM style heatmap panels.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c0f12"/>
+      <stop offset="0.52" stop-color="#172025"/>
+      <stop offset="1" stop-color="#222019"/>
+    </linearGradient>
+    <linearGradient id="scan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9bc8bd" stop-opacity="0.92"/>
+      <stop offset="0.54" stop-color="#c58a63" stop-opacity="0.82"/>
+      <stop offset="1" stop-color="#a99bbd" stop-opacity="0.7"/>
+    </linearGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <g opacity="0.22">
+    <path d="M0 96h1200M0 192h1200M0 288h1200M0 384h1200M0 480h1200M0 576h1200" stroke="#9bc8bd"/>
+    <path d="M96 0v720M192 0v720M288 0v720M384 0v720M480 0v720M576 0v720M672 0v720M768 0v720M864 0v720M960 0v720M1056 0v720" stroke="#9bc8bd"/>
+  </g>
+  <rect x="70" y="72" width="1060" height="576" rx="22" fill="#11171b" stroke="#a0b5b1" stroke-opacity="0.34"/>
+  <text x="110" y="142" fill="#eef3ef" font-family="IBM Plex Mono, Consolas, monospace" font-size="34" font-weight="700">X-GastroAI</text>
+  <text x="110" y="184" fill="#9bc8bd" font-family="IBM Plex Mono, Consolas, monospace" font-size="18" font-weight="700">Explainable gastric cancer screening pipeline</text>
+  <g transform="translate(110 235)">
+    <rect width="420" height="300" rx="18" fill="#182025" stroke="#9bc8bd" stroke-opacity="0.36"/>
+    <path d="M210 78c-70 0-120 48-120 106 0 62 45 100 88 100 29 0 45-15 54-37 12-30 42-39 69-53 29-15 48-39 42-68-6-31-56-48-133-48Z" fill="url(#scan)" filter="url(#softGlow)" opacity="0.9"/>
+    <path d="M148 196c42-20 55 12 98-18 34-24 50-61 90-47" fill="none" stroke="#eef3ef" stroke-opacity="0.62" stroke-width="4"/>
+    <circle cx="275" cy="162" r="34" fill="#c58a63" opacity="0.54"/>
+    <text x="28" y="266" fill="#a9b6b1" font-family="IBM Plex Mono, Consolas, monospace" font-size="15">Grad-CAM saliency overlay</text>
+  </g>
+  <g transform="translate(575 235)">
+    <rect width="235" height="132" rx="16" fill="#182025" stroke="#9bc8bd" stroke-opacity="0.3"/>
+    <text x="24" y="43" fill="#a9b6b1" font-family="IBM Plex Mono, Consolas, monospace" font-size="15">model.confidence</text>
+    <text x="24" y="94" fill="#9bc8bd" font-family="IBM Plex Mono, Consolas, monospace" font-size="44" font-weight="700">97.6%</text>
+    <rect y="168" width="235" height="132" rx="16" fill="#182025" stroke="#c58a63" stroke-opacity="0.32"/>
+    <text x="24" y="211" fill="#a9b6b1" font-family="IBM Plex Mono, Consolas, monospace" font-size="15">inference.ui</text>
+    <text x="24" y="262" fill="#c58a63" font-family="IBM Plex Mono, Consolas, monospace" font-size="31" font-weight="700">Streamlit</text>
+  </g>
+  <g transform="translate(852 235)">
+    <rect width="218" height="300" rx="16" fill="#182025" stroke="#a0b5b1" stroke-opacity="0.3"/>
+    <text x="24" y="42" fill="#eef3ef" font-family="IBM Plex Mono, Consolas, monospace" font-size="18" font-weight="700">pipeline</text>
+    <path d="M36 84h146M36 132h146M36 180h146M36 228h146" stroke="#9bc8bd" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="36" cy="84" r="9" fill="#9bc8bd"/>
+    <circle cx="36" cy="132" r="9" fill="#c58a63"/>
+    <circle cx="36" cy="180" r="9" fill="#a3ad7d"/>
+    <circle cx="36" cy="228" r="9" fill="#a99bbd"/>
+    <text x="58" y="90" fill="#a9b6b1" font-family="IBM Plex Mono, Consolas, monospace" font-size="13">ResNet-50</text>
+    <text x="58" y="138" fill="#a9b6b1" font-family="IBM Plex Mono, Consolas, monospace" font-size="13">preprocess</text>
+    <text x="58" y="186" fill="#a9b6b1" font-family="IBM Plex Mono, Consolas, monospace" font-size="13">predict</text>
+    <text x="58" y="234" fill="#a9b6b1" font-family="IBM Plex Mono, Consolas, monospace" font-size="13">explain</text>
+  </g>
+</svg>

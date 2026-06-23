@@ -99,7 +99,63 @@ if (backtotop) {
   if (stackConsole && stackConsole.classList.contains('is-open')) {
     window.setTimeout(() => {
       stackConsole.classList.remove('is-open')
-    }, 150)
+    }, 3000)
+  }
+
+  /**
+   * Scroll-triggered Ask Sajid assistant
+   */
+  const askSajidChat = select('.ask-sajid-chat')
+  if (askSajidChat) {
+    const chatLauncher = select('.ask-chat-launcher')
+    const chatClose = select('.ask-chat-close')
+    const chatForm = select('.ask-chat-form')
+    const topmateUrl = 'https://topmate.io/connectwithsajid'
+    const assistantRailThreshold = 420
+    let chatDismissed = false
+
+    const openAskChat = () => {
+      askSajidChat.classList.add('is-visible', 'is-open')
+    }
+
+    const closeAskChat = () => {
+      askSajidChat.classList.add('is-visible')
+      askSajidChat.classList.remove('is-open')
+      chatDismissed = true
+    }
+
+    const updateAssistantRail = () => {
+      const chatPhase = window.scrollY > assistantRailThreshold
+
+      if (stackConsole) {
+        stackConsole.classList.toggle('is-suppressed', chatPhase)
+      }
+
+      if (chatPhase) {
+        askSajidChat.classList.add('is-visible')
+        if (!chatDismissed) askSajidChat.classList.add('is-open')
+      } else {
+        askSajidChat.classList.remove('is-visible', 'is-open')
+      }
+    }
+
+    window.addEventListener('load', updateAssistantRail)
+    onscroll(document, updateAssistantRail)
+
+    if (chatLauncher) {
+      chatLauncher.addEventListener('click', openAskChat)
+    }
+
+    if (chatClose) {
+      chatClose.addEventListener('click', closeAskChat)
+    }
+
+    if (chatForm) {
+      chatForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        window.location.href = topmateUrl
+      })
+    }
   }
 
   /**
@@ -245,6 +301,31 @@ if (backtotop) {
     this.classList.toggle('bi-list')
     this.classList.toggle('bi-x')
   })
+
+  /**
+   * Desktop hover rail navigation
+   */
+  const siteHeader = select('#header')
+  if (siteHeader) {
+    const body = select('body')
+    const desktopRail = window.matchMedia('(min-width: 1200px)')
+    const pageSurfaces = [select('#hero'), select('#main')].filter(Boolean)
+
+    const openRail = () => {
+      if (desktopRail.matches) body.classList.add('nav-rail-open')
+    }
+
+    const closeRail = () => {
+      body.classList.remove('nav-rail-open')
+    }
+
+    siteHeader.addEventListener('mouseenter', openRail)
+    siteHeader.addEventListener('focusin', openRail)
+    siteHeader.addEventListener('click', openRail)
+    siteHeader.addEventListener('mouseleave', closeRail)
+    pageSurfaces.forEach((surface) => surface.addEventListener('click', closeRail))
+    desktopRail.addEventListener('change', closeRail)
+  }
 
   /**
    * Scrool with ofset on links with a class name .scrollto

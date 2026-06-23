@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>BAOLITE: PostgreSQL query engine optimization | Sajid Shaikh</title>
+  <meta name="description" content="A USC Data Modeling project story on BAOLITE, an ML-inspired PostgreSQL join operator heuristic and query engine optimization presentation.">
+  <meta name="author" content="Sajid Shaikh">
+  <link rel="canonical" href="https://connectwithsajid.github.io/blogs/baolite-postgresql-query-optimization/">
+
+  <link href="../../assets/img/ss-favicon.png" rel="icon">
+  <link href="../../assets/img/ss-favicon.png" rel="apple-touch-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="../../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../assets/css/style.css" rel="stylesheet">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "BAOLITE: PostgreSQL query engine optimization",
+      "description": "A USC Data Modeling project story on BAOLITE, an ML-inspired PostgreSQL join operator heuristic and query engine optimization presentation.",
+      "url": "https://connectwithsajid.github.io/blogs/baolite-postgresql-query-optimization/",
+      "datePublished": "2026-06-23",
+      "dateModified": "2026-06-23",
+      "author": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "image": "https://connectwithsajid.github.io/assets/img/blog/baolite-postgres.png"
+    }
+  </script>
+</head>
+
+<body class="blog-detail-page">
+  <main class="blog-detail">
+    <a class="blog-back-link" href="../../#blogs"><i class="bi bi-arrow-left"></i> Back to blogs</a>
+
+    <article class="blog-article">
+      <p class="blog-eyebrow">Database Systems / USC Data Modeling</p>
+      <h1>BAOLITE: PostgreSQL query engine optimization</h1>
+      <div class="blog-post-meta">
+        <span><i class="bi bi-person-badge"></i> Authored by Sajid Shaikh</span>
+        <time datetime="2026-06-23"><i class="bi bi-calendar-event"></i> Posted June 23, 2026</time>
+        <span><i class="bi bi-broadcast-pin"></i> connectwithsajid</span>
+      </div>
+      <p class="blog-dek">
+        A USC data modeling project and presentation exploring an ML-inspired join operator heuristic for PostgreSQL query planning.
+      </p>
+
+      <figure class="blog-figure">
+        <img src="../../assets/img/blog/baolite-postgres.png" alt="BAOLITE presentation cover for an ML-inspired join operator heuristic for PostgreSQL">
+        <figcaption>BAOLITE explored how internal query engine decisions can be guided by heuristic and benchmark-driven signals.</figcaption>
+      </figure>
+      <hr>
+
+      <h2>Why query planner internals matter</h2>
+      <p>
+        PostgreSQL performance is shaped by the planner's ability to choose efficient operators for a given workload. In a data modeling context, this becomes a practical systems problem: how do internal cost assumptions, join choices, and code-level planner behavior affect end-to-end query latency?
+      </p>
+      <p>
+        BAOLITE approached this from the inside of the database engine, combining internal PostgreSQL code changes with a project presentation focused on join operator heuristics and query engine optimization.
+      </p>
+
+      <h2>What we explored</h2>
+      <ul class="blog-checklist">
+        <li><strong>Join operator selection</strong> as a planner-level optimization target.</li>
+        <li><strong>Internal PostgreSQL code changes</strong> to reason about query engine behavior beyond surface-level SQL tuning.</li>
+        <li><strong>Benchmark-driven evaluation</strong> for understanding when a heuristic helps and when it can mislead.</li>
+        <li><strong>Database systems tradeoffs</strong> across explainability, maintainability, and performance.</li>
+      </ul>
+
+      <h2>Technical takeaway</h2>
+      <p>
+        The strongest lesson from this project was that database performance work lives below the query text. Indexes, schemas, and SQL rewrites matter, but planner internals and operator-level decisions are where small changes can cascade into large runtime differences.
+      </p>
+
+      <p class="blog-cta">
+        Deep-dive artifact: <a href="../../assets/pdf/BAOLITE.pdf">view the BAOLITE presentation PDF</a>.
+      </p>
+
+      <ul class="blog-tags">
+        <li>PostgreSQL</li>
+        <li>Query Optimization</li>
+        <li>Data Modeling</li>
+        <li>Database Internals</li>
+        <li>Join Operators</li>
+        <li>Systems Engineering</li>
+      </ul>
+    </article>
+
+    <section class="blog-comments" aria-label="Comments and reactions">
+      <div class="comments-header">
+        <span>Discussion</span>
+        <h2>React or ask a follow-up</h2>
+        <p>Comments and reactions are powered by GitHub Discussions under the connectwithsajid brand.</p>
+      </div>
+      <script src="https://giscus.app/client.js"
+              data-repo="connectwithsajid/blog-comments"
+              data-repo-id="R_kgDOTCfWzA"
+              data-category="Blog Comments"
+              data-category-id="DIC_kwDOTCfWzM4C_tbu"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="preferred_color_scheme"
+              data-lang="en"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+  </main>
+</body>
+
+</html>
