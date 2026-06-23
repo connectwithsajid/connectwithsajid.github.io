@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>See Beyond: AI image captioning for the visually impaired | Sajid Shaikh</title>
+  <meta name="description" content="A project story by Sajid Shaikh on See Beyond, a multimodal AI tool for real-time image captioning and auditory feedback for visually impaired users.">
+  <meta name="author" content="Sajid Shaikh">
+  <link rel="canonical" href="https://connectwithsajid.github.io/blogs/see-beyond-ai/">
+
+  <link href="../../assets/img/ss-favicon.png" rel="icon">
+  <link href="../../assets/img/ss-favicon.png" rel="apple-touch-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="../../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../assets/css/style.css" rel="stylesheet">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "See Beyond: AI image captioning for the visually impaired",
+      "description": "A project story on See Beyond, a multimodal AI tool for real-time image captioning and auditory feedback for visually impaired users.",
+      "url": "https://connectwithsajid.github.io/blogs/see-beyond-ai/",
+      "datePublished": "2026-06-23",
+      "dateModified": "2026-06-23",
+      "author": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "image": "https://connectwithsajid.github.io/assets/img/blog/see-beyond-presentation.png"
+    }
+  </script>
+</head>
+
+<body class="blog-detail-page">
+  <main class="blog-detail">
+    <a class="blog-back-link" href="../../#blogs"><i class="bi bi-arrow-left"></i> Back to blogs</a>
+
+    <article class="blog-article">
+      <p class="blog-eyebrow">Multimodal AI / Assistive Tech</p>
+      <h1>See Beyond: AI image captioning for the visually impaired</h1>
+      <div class="blog-post-meta">
+        <span><i class="bi bi-person-badge"></i> Authored by Sajid Shaikh</span>
+        <time datetime="2026-06-23"><i class="bi bi-calendar-event"></i> Posted June 23, 2026</time>
+        <span><i class="bi bi-broadcast-pin"></i> connectwithsajid</span>
+      </div>
+      <p class="blog-dek">
+        A vision-language AI project designed to help visually impaired users access visual content through real-time, context-rich captions and auditory feedback.
+      </p>
+
+      <figure class="blog-figure">
+        <img src="../../assets/img/blog/see-beyond-presentation.png" alt="Sajid Shaikh presenting the See Beyond multimodal AI project in a lecture hall">
+        <figcaption>Presenting See Beyond and discussing the VizWiz dataset, image captioning, and accessibility-focused AI with fellow AI practitioners.</figcaption>
+      </figure>
+      <hr>
+
+      <h2>What we built</h2>
+      <p>
+        I had the privilege of presenting the solution we built for See Beyond, a group project that uses AI to enhance the lives of visually impaired users by generating detailed image captions in real time.
+      </p>
+      <p>
+        The core of the project uses advanced vision-language models such as BLIP-2 and LLaVA, fine-tuned with real-world datasets like VizWiz to generate meaningful, context-rich descriptions from images. We used PyTorch, Hugging Face Transformers, React, and a Flask backend to create a seamless interface with speech-to-text and audio description workflows.
+      </p>
+
+      <h2>Key technical highlights</h2>
+      <ul class="blog-checklist">
+        <li><strong>Fine-tuned BLIP-2</strong> for image captioning and evaluated caption quality with cosine similarity, BLEU, ROUGE, and METEOR metrics.</li>
+        <li><strong>Leveraged CLIP ViT and OPT-2.7B</strong> inside the BLIP-2 framework for semantic understanding and language generation.</li>
+        <li><strong>Fine-tuned the Q-Transformer</strong> to improve alignment between image embeddings and textual descriptions.</li>
+        <li><strong>Built a React and Flask application</strong> for image processing, UI interaction, and generated audio descriptions.</li>
+        <li><strong>Explored Word2Vec and GloVe embeddings</strong> to improve semantic quality and caption relevance.</li>
+      </ul>
+
+      <h2>Key takeaways</h2>
+      <p>
+        The most important outcome was real-world impact: enabling visually impaired users to access visual content through auditory feedback. Working with VizWiz also forced us to handle real, imperfect images rather than polished benchmark data, which made the data processing and model evaluation work more meaningful.
+      </p>
+      <p>
+        BLIP-2 outperformed LLaVA in our project setup, showing strong potential for assistive image captioning systems when paired with the right dataset, evaluation strategy, and user-centered interface.
+      </p>
+
+      <h2>Future prospects</h2>
+      <ul class="blog-checklist">
+        <li><strong>Visual Question Answering</strong> for interactive, personalized image queries.</li>
+        <li><strong>Expanded datasets</strong> with more diverse samples from visually impaired users.</li>
+        <li><strong>Multilingual captioning</strong> for broader accessibility across languages.</li>
+        <li><strong>Contextual personalization</strong> so captions adapt to user preferences and needs.</li>
+      </ul>
+
+      <p class="blog-cta">
+        Huge thanks to Professor <a href="https://www.linkedin.com/in/xuezhe-ma-b5354731/">Xuezhe Ma</a>, TA <a href="https://www.linkedin.com/in/nan-xu-b52777125/">Nan Xu</a>, Joshua, and my teammates <a href="https://www.linkedin.com/in/anika-verma/">Anika</a>, <a href="https://www.linkedin.com/in/yashvi-hiranandani/">Yashvi</a>, <a href="https://www.linkedin.com/in/nisarg-shihora/">Nisarg</a>, and <a href="https://www.linkedin.com/in/nayangodhwani/">Nayan</a> for their collaboration and support.
+      </p>
+
+      <ul class="blog-tags">
+        <li>AI</li>
+        <li>Computer Vision</li>
+        <li>Machine Learning</li>
+        <li>Assistive Tech</li>
+        <li>Multimodal AI</li>
+        <li>BLIP-2</li>
+        <li>LLaVA</li>
+        <li>PyTorch</li>
+        <li>Hugging Face</li>
+        <li>React</li>
+        <li>Flask</li>
+        <li>VizWiz</li>
+        <li>Accessibility</li>
+        <li>AI for Good</li>
+      </ul>
+    </article>
+
+    <section class="blog-comments" aria-label="Comments and reactions">
+      <div class="comments-header">
+        <span>Discussion</span>
+        <h2>React or ask a follow-up</h2>
+        <p>Comments and reactions are powered by GitHub Discussions under the connectwithsajid brand.</p>
+      </div>
+      <script src="https://giscus.app/client.js"
+              data-repo="connectwithsajid/blog-comments"
+              data-repo-id="R_kgDOTCfWzA"
+              data-category="Blog Comments"
+              data-category-id="DIC_kwDOTCfWzM4C_tbu"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="preferred_color_scheme"
+              data-lang="en"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+  </main>
+</body>
+
+</html>

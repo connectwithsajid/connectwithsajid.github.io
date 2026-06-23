@@ -99,7 +99,142 @@ if (backtotop) {
   if (stackConsole && stackConsole.classList.contains('is-open')) {
     window.setTimeout(() => {
       stackConsole.classList.remove('is-open')
-    }, 5000)
+    }, 150)
+  }
+
+  /**
+   * GitHub contribution-style skill explorer
+   */
+  const githubLab = select('.github-lab')
+  if (githubLab) {
+    const heatmap = select('.github-heatmap')
+    const skillTitle = select('[data-skill-title]')
+    const skillBody = select('[data-skill-body]')
+    const skillTags = select('[data-skill-tags]')
+    const skillTabs = select('.skill-tabs button', true)
+    const arcadeToggle = select('[data-github-action="toggle"]')
+    const skillProfiles = {
+      data: {
+        title: 'AI Data Platforms',
+        body: 'Production pipelines, validation, observability, and analytics-ready datasets for systems where downstream decisions need trustworthy data.',
+        tags: ['AWS Glue', 'PySpark', 'Databricks', 'Data quality', '500K+ records']
+      },
+      ai: {
+        title: 'AI, RAG, and Multimodal Systems',
+        body: 'NLP text mining, RAG context optimization, image captioning, model evaluation, and vision-language workflows that turn unstructured data into usable signals.',
+        tags: ['RAG', 'BLIP-2', 'LLaVA', 'VizWiz', 'Model evals']
+      },
+      backend: {
+        title: 'Backend and Distributed Systems',
+        body: 'REST APIs, Java actor systems, graph query engines, schema design, authentication, and production interfaces around messy data.',
+        tags: ['Flask APIs', 'Java actors', 'PostgreSQL', 'Graph analytics', 'Auth']
+      },
+      devops: {
+        title: 'DevOps and Release Discipline',
+        body: 'CI/CD guardrails, Docker builds, type checks, linting, tests, and deployment workflows that keep fast AI-assisted development reliable.',
+        tags: ['CI/CD', 'Docker', 'Unit tests', 'Type checks', 'Zero downtime']
+      },
+      research: {
+        title: 'Applied Research and Experimentation',
+        body: 'Research-minded engineering across document corpora, text mining, benchmark design, caption metrics, and dataset preparation for AI systems.',
+        tags: ['NLP', 'PDF mining', 'BLEU', 'ROUGE', 'METEOR']
+      }
+    }
+    const skillKeys = Object.keys(skillProfiles)
+    const cells = []
+    let selectedCell = null
+    let snakeIndex = 24
+    let isPlaying = true
+
+    const updateSkill = (key, cell) => {
+      const profile = skillProfiles[key] || skillProfiles.data
+      if (skillTitle) skillTitle.textContent = profile.title
+      if (skillBody) skillBody.textContent = profile.body
+      if (skillTags) {
+        skillTags.innerHTML = ''
+        profile.tags.forEach((tag) => {
+          const tagEl = document.createElement('span')
+          tagEl.textContent = tag
+          skillTags.appendChild(tagEl)
+        })
+      }
+      skillTabs.forEach((tab) => {
+        tab.classList.toggle('active', tab.dataset.skill === key)
+      })
+      if (selectedCell) selectedCell.classList.remove('is-selected')
+      if (cell) {
+        selectedCell = cell
+        selectedCell.classList.add('is-selected')
+      }
+    }
+
+    if (heatmap) {
+      for (let week = 0; week < 52; week++) {
+        for (let day = 0; day < 7; day++) {
+          const index = week * 7 + day
+          const key = skillKeys[(week + day) % skillKeys.length]
+          const level = ((week * 3 + day * 5 + index) % 9) > 6 ? 4 : (week + day) % 5
+          const cell = document.createElement('button')
+          cell.type = 'button'
+          cell.className = `contribution-cell level-${level}`
+          cell.dataset.skill = key
+          cell.setAttribute('role', 'gridcell')
+          cell.setAttribute('aria-label', `Contribution signal ${index + 1}: ${skillProfiles[key].title}`)
+          cell.addEventListener('mouseenter', () => updateSkill(key, cell))
+          cell.addEventListener('focus', () => updateSkill(key, cell))
+          cell.addEventListener('click', () => {
+            updateSkill(key, cell)
+            isPlaying = false
+            if (arcadeToggle) {
+              arcadeToggle.setAttribute('aria-label', 'Play contribution snake')
+              arcadeToggle.innerHTML = '<i class="bi bi-play-fill"></i>'
+            }
+          })
+          heatmap.appendChild(cell)
+          cells.push(cell)
+        }
+      }
+    }
+
+    const renderSnake = () => {
+      if (!cells.length) return
+      cells.forEach((cell) => {
+        cell.classList.remove('is-snake-head', 'is-snake-trail')
+      })
+      for (let trail = 0; trail < 9; trail++) {
+        const cell = cells[(snakeIndex - trail + cells.length) % cells.length]
+        cell.classList.add(trail === 0 ? 'is-snake-head' : 'is-snake-trail')
+      }
+      const head = cells[snakeIndex]
+      if (head) updateSkill(head.dataset.skill, head)
+      snakeIndex = (snakeIndex + 5) % cells.length
+    }
+
+    skillTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = cells.find((cell) => cell.dataset.skill === tab.dataset.skill)
+        updateSkill(tab.dataset.skill, target)
+        isPlaying = false
+        if (arcadeToggle) {
+          arcadeToggle.setAttribute('aria-label', 'Play contribution snake')
+          arcadeToggle.innerHTML = '<i class="bi bi-play-fill"></i>'
+        }
+      })
+    })
+
+    if (arcadeToggle) {
+      arcadeToggle.addEventListener('click', () => {
+        isPlaying = !isPlaying
+        arcadeToggle.setAttribute('aria-label', `${isPlaying ? 'Pause' : 'Play'} contribution snake`)
+        arcadeToggle.innerHTML = `<i class="bi bi-${isPlaying ? 'pause' : 'play'}-fill"></i>`
+        if (isPlaying) selectedCell = null
+      })
+    }
+
+    renderSnake()
+    window.setInterval(() => {
+      if (isPlaying) renderSnake()
+    }, 620)
   }
 
   /**
