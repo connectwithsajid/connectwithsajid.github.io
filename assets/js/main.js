@@ -105,57 +105,97 @@ if (backtotop) {
   /**
    * Scroll-triggered Ask Sajid assistant
    */
-  const askSajidChat = select('.ask-sajid-chat')
-  if (askSajidChat) {
-    const chatLauncher = select('.ask-chat-launcher')
-    const chatClose = select('.ask-chat-close')
-    const chatForm = select('.ask-chat-form')
-    const topmateUrl = 'https://topmate.io/connectwithsajid'
+  const askSajidChats = select('.ask-sajid-chat', true)
+  if (askSajidChats.length) {
     const assistantRailThreshold = 420
-    let chatDismissed = false
+    const profileSummary = 'Sajid Shaikh engineers the infrastructure behind modern AI products. Combining expertise in data engineering, backend systems, and machine learning, he designs scalable platforms that convert massive volumes of raw data into intelligent, production-ready systems used for analytics, automation, and decision-making.'
+    const brokenMessage =     "If this is not the response you're looking for, then system is temporarily out of reach. Please try again in a few moments while we get things back on track."
 
-    const openAskChat = () => {
-      askSajidChat.classList.add('is-visible', 'is-open')
-    }
+    askSajidChats.forEach((askSajidChat) => {
+      const chatLauncher = askSajidChat.querySelector('.ask-chat-launcher')
+      const chatClose = askSajidChat.querySelector('.ask-chat-close')
+      const chatForm = askSajidChat.querySelector('.ask-chat-form')
+      const chatInput = askSajidChat.querySelector('.ask-chat-form input')
+      const chatLog = askSajidChat.querySelector('.ask-chat-log')
+      const botIcon = askSajidChat.querySelector('.ask-chat-message-bot img')
+      const botIconSrc = botIcon ? botIcon.getAttribute('src') : ''
+      let chatDismissed = false
 
-    const closeAskChat = () => {
-      askSajidChat.classList.add('is-visible')
-      askSajidChat.classList.remove('is-open')
-      chatDismissed = true
-    }
-
-    const updateAssistantRail = () => {
-      const chatPhase = window.scrollY > assistantRailThreshold
-
-      if (stackConsole) {
-        stackConsole.classList.toggle('is-suppressed', chatPhase)
+      const openAskChat = () => {
+        askSajidChat.classList.add('is-visible', 'is-open')
       }
 
-      if (chatPhase) {
+      const closeAskChat = () => {
         askSajidChat.classList.add('is-visible')
-        if (!chatDismissed) askSajidChat.classList.add('is-open')
-      } else {
-        askSajidChat.classList.remove('is-visible', 'is-open')
+        askSajidChat.classList.remove('is-open')
+        chatDismissed = true
       }
-    }
 
-    window.addEventListener('load', updateAssistantRail)
-    onscroll(document, updateAssistantRail)
+      const appendChatMessage = (messageText, messageType) => {
+        if (!chatLog || !messageText) return
 
-    if (chatLauncher) {
-      chatLauncher.addEventListener('click', openAskChat)
-    }
+        const message = document.createElement('div')
+        message.className = `ask-chat-message ask-chat-message-${messageType}`
 
-    if (chatClose) {
-      chatClose.addEventListener('click', closeAskChat)
-    }
+        if (messageType === 'bot' && botIconSrc) {
+          const icon = document.createElement('img')
+          icon.src = botIconSrc
+          icon.alt = ''
+          icon.setAttribute('aria-hidden', 'true')
+          message.appendChild(icon)
+        }
 
-    if (chatForm) {
-      chatForm.addEventListener('submit', (event) => {
-        event.preventDefault()
-        window.location.href = topmateUrl
-      })
-    }
+        const text = document.createElement('p')
+        text.textContent = messageText
+        message.appendChild(text)
+        chatLog.appendChild(message)
+        chatLog.scrollTop = chatLog.scrollHeight
+      }
+
+      const updateAssistantRail = () => {
+        const chatPhase = window.scrollY > assistantRailThreshold
+
+        if (stackConsole) {
+          stackConsole.classList.toggle('is-suppressed', chatPhase)
+        }
+
+        if (chatPhase) {
+          askSajidChat.classList.add('is-visible')
+          if (!chatDismissed) askSajidChat.classList.add('is-open')
+        } else {
+          askSajidChat.classList.remove('is-visible', 'is-open')
+        }
+      }
+
+      window.addEventListener('load', updateAssistantRail)
+      onscroll(document, updateAssistantRail)
+
+      if (chatLauncher) {
+        chatLauncher.addEventListener('click', openAskChat)
+      }
+
+      if (chatClose) {
+        chatClose.addEventListener('click', closeAskChat)
+      }
+
+      if (chatForm) {
+        chatForm.addEventListener('submit', (event) => {
+          event.preventDefault()
+          const question = chatInput ? chatInput.value.trim() : ''
+          if (!question) return
+
+          appendChatMessage(question, 'user')
+          appendChatMessage(profileSummary, 'bot')
+          appendChatMessage(brokenMessage, 'bot')
+          
+
+          if (chatInput) {
+            chatInput.value = ''
+            chatInput.focus()
+          }
+        })
+      }
+    })
   }
 
   /**

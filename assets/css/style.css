@@ -45,6 +45,7 @@ body {
   background-size: 44px 44px, 44px 44px, auto;
   font-family: var(--display);
   animation: gridDrift 36s linear infinite;
+  overflow-x: hidden;
 }
 
 @keyframes gridDrift {
@@ -267,6 +268,8 @@ img {
 
   #header .profile {
     flex: 0 0 auto;
+    width: 100%;
+    text-align: center;
     max-height: 0;
     opacity: 0;
     visibility: hidden;
@@ -306,6 +309,8 @@ img {
   .profile-role {
     display: block;
     width: fit-content;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   .nav-menu {
@@ -392,10 +397,19 @@ img {
     pointer-events: auto;
   }
 
+  body.nav-rail-open #header .profile h1,
+  #header:hover .profile h1,
+  #header:focus-within .profile h1 {
+    width: 100%;
+    margin-right: auto !important;
+    margin-left: auto !important;
+    text-align: center;
+  }
+
   body.nav-rail-open .profile-role,
   #header:hover .profile-role,
   #header:focus-within .profile-role {
-    margin-top: clamp(6px, 1.2vh, 10px) !important;
+    margin: clamp(6px, 1.2vh, 10px) auto 0 !important;
   }
 
   body.nav-rail-open #header .profile .social-links,
@@ -461,16 +475,6 @@ img {
     transition: width 0.32s ease, margin-left 0.32s ease;
   }
 
-  body.nav-rail-open #hero,
-  body.nav-rail-open #main,
-  #header:hover ~ #hero,
-  #header:hover ~ #main,
-  #header:focus-within ~ #hero,
-  #header:focus-within ~ #main {
-    width: calc(100% - 300px);
-    margin-left: 300px;
-  }
-
   #footer {
     width: 300px;
     padding: 16px;
@@ -514,8 +518,8 @@ img {
   gap: 28px;
   align-items: center;
   min-height: 100vh;
-  width: calc(100% - 300px);
-  margin-left: 300px;
+  width: calc(100% - 76px);
+  margin-left: 76px;
   padding: 84px min(5.5vw, 76px) 42px;
   overflow: hidden;
   background:
@@ -895,7 +899,7 @@ img {
 # Layout
 --------------------------------------------------------------*/
 #main {
-  margin-left: 300px;
+  margin-left: 76px;
   counter-reset: section-count;
 }
 
@@ -2412,6 +2416,17 @@ section {
   text-transform: uppercase;
 }
 
+.ask-chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 190px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 200, 189, 0.42) rgba(255, 255, 255, 0.04);
+}
+
 .ask-chat-close {
   display: inline-flex;
   align-items: center;
@@ -2442,6 +2457,13 @@ section {
   border-radius: 8px;
 }
 
+.ask-chat-message-user {
+  align-self: flex-end;
+  max-width: 88%;
+  background: rgba(197, 138, 99, 0.14);
+  border-color: rgba(197, 138, 99, 0.34);
+}
+
 .ask-chat-message img {
   width: 32px;
   height: 32px;
@@ -2455,6 +2477,10 @@ section {
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1.55;
+}
+
+.ask-chat-message-user p {
+  color: rgba(238, 243, 239, 0.86);
 }
 
 .ask-chat-form {
@@ -2768,6 +2794,10 @@ section {
 
   .ask-chat-body {
     padding: 16px;
+  }
+
+  .ask-chat-log {
+    max-height: 160px;
   }
 
   .download-resume-btn {
