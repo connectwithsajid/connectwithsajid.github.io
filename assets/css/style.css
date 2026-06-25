@@ -913,6 +913,18 @@ section {
   counter-increment: section-count;
 }
 
+body.about-page #main > .about-hero,
+body.about-page #main > .whats-new {
+  counter-increment: none;
+}
+
+body.about-page #about,
+body.about-page #profile,
+body.about-page #expertise,
+body.about-page #experience {
+  scroll-margin-top: 24px;
+}
+
 .section-bg {
   background:
     linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
@@ -1695,6 +1707,191 @@ section {
 /*--------------------------------------------------------------
 # Projects
 --------------------------------------------------------------*/
+.project-cube-stage {
+  position: relative;
+  min-height: 250vh;
+  margin: 0 0 34px;
+}
+
+.project-cube-sticky {
+  position: sticky;
+  top: 48px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(420px, 1.28fr);
+  gap: 32px;
+  align-items: center;
+  min-height: min(760px, calc(100vh - 72px));
+  padding: clamp(22px, 3vw, 34px);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 76% 24%, rgba(155, 200, 189, 0.14), transparent 36%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.054), rgba(255, 255, 255, 0.024));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--edge);
+}
+
+.project-cube-stage.is-bouncing .project-cube-sticky {
+  border-color: rgba(155, 200, 189, 0.34);
+}
+
+.project-cube-stage.is-assembled .project-cube-sticky {
+  border-color: rgba(155, 200, 189, 0.5);
+  box-shadow: 0 0 0 1px rgba(155, 200, 189, 0.2), 0 26px 74px rgba(0, 0, 0, 0.32);
+}
+
+.project-cube-stage.is-bursting .project-cube-sticky {
+  border-color: rgba(197, 138, 99, 0.36);
+}
+
+.project-cube-copy h3 {
+  max-width: 460px;
+  margin: 10px 0 14px;
+  color: var(--soft);
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.project-cube-copy p {
+  max-width: 500px;
+  margin: 0;
+  color: rgba(238, 243, 239, 0.68);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.project-cube-visual {
+  position: relative;
+  min-height: 480px;
+  perspective: 1500px;
+}
+
+.project-cube-scene {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.project-cube-scene::before,
+.project-cube-scene::after {
+  content: "";
+  position: absolute;
+  inset: 12% 8%;
+  pointer-events: none;
+}
+
+.project-cube-scene::before {
+  opacity: 0.32;
+  background-image: radial-gradient(circle, rgba(155, 200, 189, 0.26) 1px, transparent 1px);
+  background-size: 18px 18px;
+  mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+}
+
+.project-cube-scene::after {
+  opacity: 0.36;
+  border: 1px dashed rgba(155, 200, 189, 0.16);
+  transform: skewY(-10deg);
+}
+
+.project-rubik-cubelet {
+  --cube-size: 32px;
+  --rubik-face: rgba(155, 200, 189, 0.92);
+  --rubik-edge: rgba(226, 242, 238, 0.78);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  width: var(--cube-size);
+  height: var(--cube-size);
+  opacity: 0;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.34));
+}
+
+.project-rubik-cubelet:nth-child(5n+2) {
+  --rubik-face: rgba(155, 200, 189, 0.98);
+}
+
+.project-rubik-cubelet:nth-child(5n+3) {
+  --rubik-face: rgba(132, 179, 169, 0.92);
+}
+
+.project-rubik-cubelet:nth-child(5n+4) {
+  --rubik-face: rgba(182, 211, 204, 0.86);
+}
+
+.project-rubik-face {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 42%),
+    var(--rubik-face);
+  border: 1px solid var(--rubik-edge);
+  border-radius: 3px;
+  box-shadow: inset 0 0 18px rgba(8, 12, 14, 0.2), 0 0 18px rgba(155, 200, 189, 0.22);
+}
+
+.project-rubik-face-front {
+  transform: translateZ(calc(var(--cube-size) / 2));
+}
+
+.project-rubik-face-back {
+  filter: brightness(0.64);
+  transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2));
+}
+
+.project-rubik-face-right {
+  filter: brightness(0.82);
+  transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2));
+}
+
+.project-rubik-face-left {
+  filter: brightness(0.58);
+  transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2));
+}
+
+.project-rubik-face-top {
+  filter: brightness(1.1);
+  transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
+}
+
+.project-rubik-face-bottom {
+  filter: brightness(0.5);
+  transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2));
+}
+
+.project-card-grid {
+  --project-reveal: 0;
+  --project-opacity: 0;
+  --project-blur: 8px;
+  --project-offset: 58px;
+  --project-scale: 0.96;
+  opacity: var(--project-opacity);
+  visibility: hidden;
+  filter: blur(var(--project-blur));
+  transform: translateY(var(--project-offset)) scale(var(--project-scale));
+  transform-origin: top center;
+  pointer-events: none;
+  transition: opacity 0.7s ease, filter 0.7s ease, transform 0.7s ease, visibility 0s linear 0.7s;
+}
+
+.project-card-grid.is-revealed {
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.project-card[id] {
+  scroll-margin-top: 96px;
+}
+
 .project-card {
   min-height: 278px;
 }
@@ -2658,6 +2855,14 @@ section {
     padding-left: 0;
   }
 
+  .project-cube-sticky {
+    grid-template-columns: 1fr;
+  }
+
+  .project-cube-visual {
+    min-height: 380px;
+  }
+
   .contact-panel {
     grid-template-columns: 1fr;
   }
@@ -2762,6 +2967,36 @@ section {
   .profile-visual img {
     aspect-ratio: 16 / 9;
     object-position: center 52%;
+  }
+
+  .project-cube-stage {
+    min-height: 170vh;
+  }
+
+  .project-cube-sticky {
+    position: sticky;
+    top: 72px;
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 96px);
+  }
+
+  .project-cube-visual {
+    min-height: 340px;
+  }
+
+  .project-rubik-cubelet {
+    --cube-size: 20px;
+  }
+
+  .project-card-grid {
+    opacity: var(--project-opacity);
+    visibility: hidden;
+    filter: blur(var(--project-blur));
+    transform: translateY(var(--project-offset)) scale(var(--project-scale));
+  }
+
+  .project-card-grid.is-revealed {
+    visibility: visible;
   }
 
   .ask-sajid-chat {

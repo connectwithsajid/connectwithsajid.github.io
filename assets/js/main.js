@@ -186,7 +186,11 @@ if (backtotop) {
 
           appendChatMessage(question, 'user')
           appendChatMessage(profileSummary, 'bot')
-          appendChatMessage(brokenMessage, 'bot')
+          setTimeout(function() {
+            appendChatMessage(brokenMessage, 'bot')
+            }, 8500);
+
+         
           
 
           if (chatInput) {
@@ -196,6 +200,155 @@ if (backtotop) {
         })
       }
     })
+  }
+
+  /**
+   * Scroll-driven project cube transition
+   */
+  const projectCube = select('[data-project-cube]')
+  if (projectCube) {
+    const projectGrid = select('[data-project-grid]')
+    const rubikScene = projectCube.querySelector('[data-rubik-scene]')
+    const reduceCubeMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max)
+    const lerp = (from, to, amount) => from + (to - from) * amount
+    const ease = (value) => {
+      const x = clamp(value)
+      return x * x * (3 - 2 * x)
+    }
+    const rubikSize = 3
+    const rubikHalf = Math.floor(rubikSize / 2)
+    const rubikSpacing = 42
+    const rubikFaces = ['front', 'back', 'right', 'left', 'top', 'bottom']
+    const projectSlots = [
+      [-1.5, -1.15], [-0.5, -1.15], [0.5, -1.15], [1.5, -1.15],
+      [-1.5, -0.35], [-0.5, -0.35], [0.5, -0.35], [1.5, -0.35],
+      [-1.5, 0.45], [-0.5, 0.45], [0.5, 0.45], [1.5, 0.45],
+      [-1.0, 1.25], [0, 1.25], [1.0, 1.25]
+    ]
+    const cubelets = []
+
+    if (rubikScene) {
+      const fragment = document.createDocumentFragment()
+      const coords = []
+
+      for (let z = -rubikHalf; z <= rubikHalf; z++) {
+        for (let y = -rubikHalf; y <= rubikHalf; y++) {
+          for (let x = -rubikHalf; x <= rubikHalf; x++) {
+            if (Math.abs(x) !== rubikHalf && Math.abs(y) !== rubikHalf && Math.abs(z) !== rubikHalf) continue
+            const order = Math.abs(x) + Math.abs(y) + Math.abs(z) + ((x + rubikHalf) * 3) + ((y + rubikHalf) * 2) + (z + rubikHalf)
+            coords.push({ x, y, z, order })
+          }
+        }
+      }
+
+      coords.sort((a, b) => a.order - b.order)
+      coords.forEach((coord, index) => {
+        const cube = document.createElement('span')
+        const slot = projectSlots[index % projectSlots.length]
+        const ringAngle = index * 2.3999632297
+        const distance = Math.max(1, Math.abs(coord.x) + Math.abs(coord.y) + Math.abs(coord.z))
+        const normalLength = Math.hypot(coord.x, coord.y, coord.z) || 1
+        const normalX = coord.x / normalLength
+        const normalY = coord.y / normalLength
+        const normalZ = coord.z / normalLength
+        cube.className = 'project-rubik-cubelet'
+        cube.setAttribute('aria-hidden', 'true')
+        rubikFaces.forEach((face) => {
+          const faceEl = document.createElement('span')
+          faceEl.className = `project-rubik-face project-rubik-face-${face}`
+          cube.appendChild(faceEl)
+        })
+        fragment.appendChild(cube)
+        cubelets.push({
+          el: cube,
+          order: index,
+          cx: coord.x * rubikSpacing,
+          cy: coord.y * rubikSpacing,
+          cz: coord.z * rubikSpacing,
+          ex: normalX * (360 + distance * 24) + slot[0] * 130 + Math.cos(ringAngle) * 42,
+          ey: normalY * (250 + distance * 20) + slot[1] * 94 + Math.sin(ringAngle) * 34,
+          ez: normalZ * (300 + distance * 30) + 170 - (index % 9) * 34
+        })
+      })
+      rubikScene.appendChild(fragment)
+    }
+
+    let projectCubeFrame = null
+
+    const updateProjectCube = () => {
+      projectCubeFrame = null
+
+      if (reduceCubeMotion) {
+        projectCube.classList.add('is-bursting')
+        if (projectGrid) {
+          projectGrid.style.setProperty('--project-reveal', '1')
+          projectGrid.style.setProperty('--project-opacity', '1')
+          projectGrid.style.setProperty('--project-blur', '0')
+          projectGrid.style.setProperty('--project-offset', '0')
+          projectGrid.style.setProperty('--project-scale', '1')
+          projectGrid.classList.add('is-revealed')
+        }
+        return
+      }
+
+      const rect = projectCube.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || 1
+      const scrollSpan = Math.max(projectCube.offsetHeight - viewportHeight * 0.62, 1)
+      const progress = clamp((viewportHeight * 0.72 - rect.top) / scrollSpan)
+      const bouncePhase = clamp(progress / 0.42)
+      const spinPhase = ease(progress / 0.56)
+      const explodePhase = ease((progress - 0.5) / 0.26)
+      const cardRevealPhase = ease((progress - 0.68) / 0.18)
+      const revealCards = cardRevealPhase > 0.04
+      const bounceWave = Math.sin(bouncePhase * Math.PI * 4)
+      const bounceFalloff = Math.max(0, 1 - bouncePhase)
+      const bounceY = -Math.abs(bounceWave) * bounceFalloff * 42
+      const bounceScale = 1 + Math.abs(bounceWave) * bounceFalloff * 0.14
+
+      projectCube.style.setProperty('--cube-progress', progress.toFixed(3))
+      projectCube.classList.toggle('is-bouncing', progress > 0.02 && progress < 0.48)
+      projectCube.classList.toggle('is-assembled', progress >= 0.12 && progress < 0.5)
+      projectCube.classList.toggle('is-bursting', explodePhase > 0.04)
+      if (projectGrid) {
+        projectGrid.style.setProperty('--project-reveal', cardRevealPhase.toFixed(3))
+        projectGrid.style.setProperty('--project-opacity', cardRevealPhase.toFixed(3))
+        projectGrid.style.setProperty('--project-blur', `${((1 - cardRevealPhase) * 8).toFixed(2)}px`)
+        projectGrid.style.setProperty('--project-offset', `${((1 - cardRevealPhase) * 58).toFixed(1)}px`)
+        projectGrid.style.setProperty('--project-scale', (0.96 + cardRevealPhase * 0.04).toFixed(3))
+        projectGrid.classList.toggle('is-revealed', revealCards)
+      }
+
+      const groupX = -20 + bouncePhase * 5 + spinPhase * 24
+      const groupY = -38 + spinPhase * 430 + explodePhase * 120
+      const groupZ = 2 + spinPhase * 34 + explodePhase * 20
+      if (rubikScene) {
+        rubikScene.style.transform = `rotateX(${groupX.toFixed(1)}deg) rotateY(${groupY.toFixed(1)}deg) rotateZ(${groupZ.toFixed(1)}deg)`
+      }
+
+      cubelets.forEach((cubelet) => {
+        const stagger = cubelet.order / Math.max(cubelets.length - 1, 1)
+        const cubeExplode = ease((explodePhase - stagger * 0.22) / 0.78)
+        const x = lerp(cubelet.cx - 300, cubelet.ex, cubeExplode)
+        const y = lerp(cubelet.cy + bounceY - 70, cubelet.ey, cubeExplode)
+        const z = lerp(cubelet.cz, cubelet.ez, cubeExplode)
+        const scale = bounceScale * lerp(1, 0.66, cubeExplode)
+        const opacity = lerp(1, 0.02, ease((cubeExplode - 0.36) / 0.64))
+
+        cubelet.el.style.opacity = opacity.toFixed(3)
+        cubelet.el.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) scale(${scale.toFixed(3)})`
+      })
+    }
+
+    const requestProjectCubeUpdate = () => {
+      if (projectCubeFrame) return
+      projectCubeFrame = window.requestAnimationFrame(updateProjectCube)
+    }
+
+    window.addEventListener('load', requestProjectCubeUpdate)
+    window.addEventListener('resize', requestProjectCubeUpdate)
+    onscroll(document, requestProjectCubeUpdate)
+    requestProjectCubeUpdate()
   }
 
   /**
@@ -462,55 +615,61 @@ if (backtotop) {
   /**
    * Initiate portfolio lightbox
    */
-  const portfolioLightbox = GLightbox({
-    selector: '.portfolio-lightbox'
-  });
+  if (typeof GLightbox !== 'undefined') {
+    GLightbox({
+      selector: '.portfolio-lightbox'
+    })
+  }
 
   /**
    * Portfolio details slider
    */
-  new Swiper('.portfolio-details-slider', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
+  if (typeof Swiper !== 'undefined') {
+    new Swiper('.portfolio-details-slider', {
+      speed: 400,
+      loop: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true
+      }
+    })
+  }
 
   /**
    * Testimonials slider
    */
-  new Swiper('.testimonials-slider', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    },
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20
+  if (typeof Swiper !== 'undefined') {
+    new Swiper('.testimonials-slider', {
+      speed: 600,
+      loop: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false
       },
+      slidesPerView: 'auto',
+      pagination: {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true
+      },
+      breakpoints: {
+        320: {
+          slidesPerView: 1,
+          spaceBetween: 20
+        },
 
-      1200: {
-        slidesPerView: 3,
-        spaceBetween: 20
+        1200: {
+          slidesPerView: 3,
+          spaceBetween: 20
+        }
       }
-    }
-  });
+    })
+  }
 
   /**
    * Animation on scroll
@@ -527,6 +686,8 @@ if (backtotop) {
   /**
    * Initiate Pure Counter
    */
-  new PureCounter();
+  if (typeof PureCounter !== 'undefined') {
+    new PureCounter()
+  }
 
 })()
