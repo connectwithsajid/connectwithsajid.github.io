@@ -108,8 +108,15 @@ if (backtotop) {
   const askSajidChats = select('.ask-sajid-chat', true)
   if (askSajidChats.length) {
     const assistantRailThreshold = 420
+    const projectSection = select('#projects')
     const profileSummary = 'Sajid Shaikh engineers the infrastructure behind modern AI products. Combining expertise in data engineering, backend systems, and machine learning, he designs scalable platforms that convert massive volumes of raw data into intelligent, production-ready systems used for analytics, automation, and decision-making.'
     const brokenMessage =     "If this is not the response you're looking for, then system is temporarily out of reach. Please try again in a few moments while we get things back on track."
+    const isProjectShowcaseActive = () => {
+      if (!projectSection) return false
+      const rect = projectSection.getBoundingClientRect()
+      const viewportHeight = window.innerHeight || 1
+      return rect.top < viewportHeight * 0.78 && rect.bottom > viewportHeight * 0.16
+    }
 
     askSajidChats.forEach((askSajidChat) => {
       const chatLauncher = askSajidChat.querySelector('.ask-chat-launcher')
@@ -122,12 +129,15 @@ if (backtotop) {
       let chatDismissed = false
 
       const openAskChat = () => {
+        chatDismissed = false
+        askSajidChat.dataset.userOpened = 'true'
         askSajidChat.classList.add('is-visible', 'is-open')
       }
 
       const closeAskChat = () => {
         askSajidChat.classList.add('is-visible')
         askSajidChat.classList.remove('is-open')
+        delete askSajidChat.dataset.userOpened
         chatDismissed = true
       }
 
@@ -154,6 +164,8 @@ if (backtotop) {
 
       const updateAssistantRail = () => {
         const chatPhase = window.scrollY > assistantRailThreshold
+        const projectShowcaseActive = isProjectShowcaseActive()
+        const userOpenedChat = askSajidChat.dataset.userOpened === 'true'
 
         if (stackConsole) {
           stackConsole.classList.toggle('is-suppressed', chatPhase)
@@ -161,9 +173,11 @@ if (backtotop) {
 
         if (chatPhase) {
           askSajidChat.classList.add('is-visible')
-          if (!chatDismissed) askSajidChat.classList.add('is-open')
+          if (!chatDismissed && !projectShowcaseActive) askSajidChat.classList.add('is-open')
+          if (projectShowcaseActive && !userOpenedChat) askSajidChat.classList.remove('is-open')
         } else {
           askSajidChat.classList.remove('is-visible', 'is-open')
+          delete askSajidChat.dataset.userOpened
         }
       }
 
@@ -190,9 +204,6 @@ if (backtotop) {
             appendChatMessage(brokenMessage, 'bot')
             }, 8500);
 
-         
-          
-
           if (chatInput) {
             chatInput.value = ''
             chatInput.focus()
@@ -208,7 +219,8 @@ if (backtotop) {
   const projectCube = select('[data-project-cube]')
   if (projectCube) {
     const projectGrid = select('[data-project-grid]')
-    const rubikScene = projectCube.querySelector('[data-rubik-scene]')
+    const cubeletCloud = projectCube.querySelector('[data-cubelet-cloud]')
+    const previewTiles = projectCube.querySelector('[data-project-preview-tiles]')
     const reduceCubeMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max)
     const lerp = (from, to, amount) => from + (to - from) * amount
@@ -216,28 +228,32 @@ if (backtotop) {
       const x = clamp(value)
       return x * x * (3 - 2 * x)
     }
-    const rubikSize = 3
-    const rubikHalf = Math.floor(rubikSize / 2)
-    const rubikSpacing = 42
-    const rubikFaces = ['front', 'back', 'right', 'left', 'top', 'bottom']
-    const projectSlots = [
-      [-1.5, -1.15], [-0.5, -1.15], [0.5, -1.15], [1.5, -1.15],
-      [-1.5, -0.35], [-0.5, -0.35], [0.5, -0.35], [1.5, -0.35],
-      [-1.5, 0.45], [-0.5, 0.45], [0.5, 0.45], [1.5, 0.45],
-      [-1.0, 1.25], [0, 1.25], [1.0, 1.25]
+    const cubeSize = 3
+    const cubeTargets = [
+      [-250, -150], [-84, -150], [84, -150], [250, -150],
+      [-250, 0], [-84, 0], [84, 0], [250, 0],
+      [-250, 150], [-84, 150], [84, 150], [250, 150],
+      [-168, 232], [0, 232], [168, 232]
     ]
     const cubelets = []
 
-    if (rubikScene) {
+    if (cubeletCloud) {
+      cubeletCloud.innerHTML = ''
       const fragment = document.createDocumentFragment()
       const coords = []
+      const isoStep = 48
 
-      for (let z = -rubikHalf; z <= rubikHalf; z++) {
-        for (let y = -rubikHalf; y <= rubikHalf; y++) {
-          for (let x = -rubikHalf; x <= rubikHalf; x++) {
-            if (Math.abs(x) !== rubikHalf && Math.abs(y) !== rubikHalf && Math.abs(z) !== rubikHalf) continue
-            const order = Math.abs(x) + Math.abs(y) + Math.abs(z) + ((x + rubikHalf) * 3) + ((y + rubikHalf) * 2) + (z + rubikHalf)
-            coords.push({ x, y, z, order })
+      for (let z = 0; z < cubeSize; z++) {
+        for (let y = 0; y < cubeSize; y++) {
+          for (let x = 0; x < cubeSize; x++) {
+            const cx = x - 1
+            const cy = y - 1
+            const cz = z - 1
+            const isoX = (cx - cz) * isoStep
+            const isoY = (cx + cz) * (isoStep * 0.5) - cy * isoStep
+            const distance = Math.abs(cx) + Math.abs(cy) + Math.abs(cz)
+            const order = (z * 9) + ((2 - y) * 3) + x
+            coords.push({ x: isoX, y: isoY, z: cz, distance, order })
           }
         }
       }
@@ -245,98 +261,113 @@ if (backtotop) {
       coords.sort((a, b) => a.order - b.order)
       coords.forEach((coord, index) => {
         const cube = document.createElement('span')
-        const slot = projectSlots[index % projectSlots.length]
+        const topFace = document.createElement('span')
+        const leftFace = document.createElement('span')
+        const rightFace = document.createElement('span')
+        const target = cubeTargets[index % cubeTargets.length]
         const ringAngle = index * 2.3999632297
-        const distance = Math.max(1, Math.abs(coord.x) + Math.abs(coord.y) + Math.abs(coord.z))
-        const normalLength = Math.hypot(coord.x, coord.y, coord.z) || 1
-        const normalX = coord.x / normalLength
-        const normalY = coord.y / normalLength
-        const normalZ = coord.z / normalLength
-        cube.className = 'project-rubik-cubelet'
+
+        cube.className = 'iso-cubie'
         cube.setAttribute('aria-hidden', 'true')
-        rubikFaces.forEach((face) => {
-          const faceEl = document.createElement('span')
-          faceEl.className = `project-rubik-face project-rubik-face-${face}`
-          cube.appendChild(faceEl)
-        })
+        topFace.className = 'iso-cubie-face top'
+        leftFace.className = 'iso-cubie-face left'
+        rightFace.className = 'iso-cubie-face right'
+        cube.append(topFace, leftFace, rightFace)
         fragment.appendChild(cube)
+
         cubelets.push({
           el: cube,
           order: index,
-          cx: coord.x * rubikSpacing,
-          cy: coord.y * rubikSpacing,
-          cz: coord.z * rubikSpacing,
-          ex: normalX * (360 + distance * 24) + slot[0] * 130 + Math.cos(ringAngle) * 42,
-          ey: normalY * (250 + distance * 20) + slot[1] * 94 + Math.sin(ringAngle) * 34,
-          ez: normalZ * (300 + distance * 30) + 170 - (index % 9) * 34
+          distance: coord.distance,
+          isCore: coord.distance === 0,
+          startX: coord.x,
+          startY: coord.y,
+          startZ: coord.z,
+          joinFromX: Math.cos(ringAngle) * (160 + coord.distance * 16),
+          joinFromY: Math.sin(ringAngle) * (106 + coord.distance * 12),
+          joinDelay: Math.max(0, coord.distance - 1) * 0.055 + index * 0.004,
+          targetX: target[0] + Math.cos(ringAngle) * 36,
+          targetY: target[1] + Math.sin(ringAngle) * 26
         })
       })
-      rubikScene.appendChild(fragment)
+      cubeletCloud.appendChild(fragment)
     }
 
     let projectCubeFrame = null
+    const setProjectGridReveal = (amount) => {
+      if (!projectGrid) return
+      projectGrid.style.setProperty('--project-reveal', amount.toFixed(3))
+      projectGrid.style.setProperty('--project-opacity', amount.toFixed(3))
+      projectGrid.style.setProperty('--project-blur', `${((1 - amount) * 8).toFixed(2)}px`)
+      projectGrid.style.setProperty('--project-offset', `${((1 - amount) * 58).toFixed(1)}px`)
+      projectGrid.style.setProperty('--project-scale', (0.96 + amount * 0.04).toFixed(3))
+      projectGrid.classList.toggle('is-revealed', amount > 0.04)
+    }
 
     const updateProjectCube = () => {
       projectCubeFrame = null
 
       if (reduceCubeMotion) {
         projectCube.classList.add('is-bursting')
-        if (projectGrid) {
-          projectGrid.style.setProperty('--project-reveal', '1')
-          projectGrid.style.setProperty('--project-opacity', '1')
-          projectGrid.style.setProperty('--project-blur', '0')
-          projectGrid.style.setProperty('--project-offset', '0')
-          projectGrid.style.setProperty('--project-scale', '1')
-          projectGrid.classList.add('is-revealed')
-        }
+        if (previewTiles) previewTiles.classList.add('is-visible')
+        setProjectGridReveal(1)
         return
       }
 
       const rect = projectCube.getBoundingClientRect()
       const viewportHeight = window.innerHeight || 1
-      const scrollSpan = Math.max(projectCube.offsetHeight - viewportHeight * 0.62, 1)
-      const progress = clamp((viewportHeight * 0.72 - rect.top) / scrollSpan)
-      const bouncePhase = clamp(progress / 0.42)
-      const spinPhase = ease(progress / 0.56)
-      const explodePhase = ease((progress - 0.5) / 0.26)
-      const cardRevealPhase = ease((progress - 0.68) / 0.18)
-      const revealCards = cardRevealPhase > 0.04
+      const scrollSpan = Math.max(projectCube.offsetHeight - viewportHeight, 1)
+      const progress = clamp((0 - rect.top) / scrollSpan)
+      const enterPhase = ease(progress / 0.16)
+      const bouncePhase = clamp((progress - 0.22) / 0.32)
+      const explodePhase = ease((progress - 0.54) / 0.22)
+      const previewRevealPhase = ease((progress - 0.62) / 0.18)
+      const gridRevealPhase = ease((progress - 0.8) / 0.18)
       const bounceWave = Math.sin(bouncePhase * Math.PI * 4)
       const bounceFalloff = Math.max(0, 1 - bouncePhase)
-      const bounceY = -Math.abs(bounceWave) * bounceFalloff * 42
-      const bounceScale = 1 + Math.abs(bounceWave) * bounceFalloff * 0.14
+      const bounceY = -Math.abs(bounceWave) * bounceFalloff * 30
+      const cloudX = lerp(-28, 0, enterPhase)
+      const cloudY = lerp(24, 0, enterPhase) + bounceY
+      const cloudScale = 0.88 + enterPhase * 0.12 + Math.abs(bounceWave) * bounceFalloff * 0.08
+      const cloudOpacity = lerp(0.9, 1, enterPhase) * lerp(1, 0.08, ease((explodePhase - 0.42) / 0.58))
+      const cloudRotate = lerp(-4, 0, enterPhase) + bounceWave * bounceFalloff * 2
 
       projectCube.style.setProperty('--cube-progress', progress.toFixed(3))
-      projectCube.classList.toggle('is-bouncing', progress > 0.02 && progress < 0.48)
-      projectCube.classList.toggle('is-assembled', progress >= 0.12 && progress < 0.5)
+      projectCube.classList.toggle('is-sliding', progress < 0.2)
+      projectCube.classList.toggle('is-bouncing', progress >= 0.22 && progress < 0.54)
+      projectCube.classList.toggle('is-assembled', progress >= 0.28 && progress < 0.54)
       projectCube.classList.toggle('is-bursting', explodePhase > 0.04)
-      if (projectGrid) {
-        projectGrid.style.setProperty('--project-reveal', cardRevealPhase.toFixed(3))
-        projectGrid.style.setProperty('--project-opacity', cardRevealPhase.toFixed(3))
-        projectGrid.style.setProperty('--project-blur', `${((1 - cardRevealPhase) * 8).toFixed(2)}px`)
-        projectGrid.style.setProperty('--project-offset', `${((1 - cardRevealPhase) * 58).toFixed(1)}px`)
-        projectGrid.style.setProperty('--project-scale', (0.96 + cardRevealPhase * 0.04).toFixed(3))
-        projectGrid.classList.toggle('is-revealed', revealCards)
+
+      if (cubeletCloud) {
+        cubeletCloud.style.opacity = cloudOpacity.toFixed(3)
+        cubeletCloud.style.transform = `translate(-50%, -50%) translate3d(${cloudX.toFixed(1)}px, ${cloudY.toFixed(1)}px, 0) scale(${cloudScale.toFixed(3)}) rotate(${cloudRotate.toFixed(2)}deg)`
       }
 
-      const groupX = -20 + bouncePhase * 5 + spinPhase * 24
-      const groupY = -38 + spinPhase * 430 + explodePhase * 120
-      const groupZ = 2 + spinPhase * 34 + explodePhase * 20
-      if (rubikScene) {
-        rubikScene.style.transform = `rotateX(${groupX.toFixed(1)}deg) rotateY(${groupY.toFixed(1)}deg) rotateZ(${groupZ.toFixed(1)}deg)`
+      if (previewTiles) {
+        previewTiles.style.setProperty('--project-reveal', previewRevealPhase.toFixed(3))
+        previewTiles.style.setProperty('--preview-opacity', previewRevealPhase.toFixed(3))
+        previewTiles.style.setProperty('--preview-blur', `${((1 - previewRevealPhase) * 10).toFixed(2)}px`)
+        previewTiles.style.setProperty('--preview-offset', `${((1 - previewRevealPhase) * 42).toFixed(1)}px`)
+        previewTiles.classList.toggle('is-visible', previewRevealPhase > 0.04)
       }
+
+      setProjectGridReveal(gridRevealPhase)
 
       cubelets.forEach((cubelet) => {
         const stagger = cubelet.order / Math.max(cubelets.length - 1, 1)
-        const cubeExplode = ease((explodePhase - stagger * 0.22) / 0.78)
-        const x = lerp(cubelet.cx - 300, cubelet.ex, cubeExplode)
-        const y = lerp(cubelet.cy + bounceY - 70, cubelet.ey, cubeExplode)
-        const z = lerp(cubelet.cz, cubelet.ez, cubeExplode)
-        const scale = bounceScale * lerp(1, 0.66, cubeExplode)
-        const opacity = lerp(1, 0.02, ease((cubeExplode - 0.36) / 0.64))
+        const cubeAssemble = cubelet.isCore ? 1 : ease((progress - cubelet.joinDelay) / 0.28)
+        const cubeExplode = ease((explodePhase - stagger * 0.16) / 0.84)
+        const assembledX = lerp(cubelet.joinFromX, cubelet.startX, cubeAssemble)
+        const assembledY = lerp(cubelet.joinFromY, cubelet.startY, cubeAssemble)
+        const x = lerp(assembledX, cubelet.targetX, cubeExplode)
+        const y = lerp(assembledY, cubelet.targetY, cubeExplode)
+        const depth = 1 + cubelet.startZ * 0.04
+        const scale = depth * lerp(1, 0.68, cubeExplode)
+        const assembleOpacity = cubelet.isCore ? 1 : clamp((progress - cubelet.joinDelay + 0.04) / 0.16)
+        const opacity = assembleOpacity * lerp(1, 0.04, ease((cubeExplode - 0.45) / 0.55))
 
         cubelet.el.style.opacity = opacity.toFixed(3)
-        cubelet.el.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) scale(${scale.toFixed(3)})`
+        cubelet.el.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`
       })
     }
 
