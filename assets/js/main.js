@@ -110,7 +110,7 @@ if (backtotop) {
     const assistantRailThreshold = 420
     const projectSection = select('#projects')
     const profileSummary = 'Sajid Shaikh engineers the infrastructure behind modern AI products. Combining expertise in data engineering, backend systems, and machine learning, he designs scalable platforms that convert massive volumes of raw data into intelligent, production-ready systems used for analytics, automation, and decision-making.'
-    const brokenMessage =     "If this is not the response you're looking for, then system is temporarily out of reach. Please try again in a few moments while we get things back on track."
+    const brokenMessage = "The live assistant is temporarily unavailable, so here is a quick portfolio summary instead. For deeper discussion, continue on Topmate."
     const isProjectShowcaseActive = () => {
       if (!projectSection) return false
       const rect = projectSection.getBoundingClientRect()
@@ -123,9 +123,11 @@ if (backtotop) {
       const chatClose = askSajidChat.querySelector('.ask-chat-close')
       const chatForm = askSajidChat.querySelector('.ask-chat-form')
       const chatInput = askSajidChat.querySelector('.ask-chat-form input')
+      const chatSubmit = askSajidChat.querySelector('.ask-chat-form button')
       const chatLog = askSajidChat.querySelector('.ask-chat-log')
       const botIcon = askSajidChat.querySelector('.ask-chat-message-bot img')
       const botIconSrc = botIcon ? botIcon.getAttribute('src') : ''
+      const chatEndpoint = askSajidChat.dataset.chatEndpoint || ''
       let chatDismissed = false
 
       const openAskChat = () => {
@@ -141,11 +143,12 @@ if (backtotop) {
         chatDismissed = true
       }
 
-      const appendChatMessage = (messageText, messageType) => {
+      const appendChatMessage = (messageText, messageType, pending = false) => {
         if (!chatLog || !messageText) return
 
         const message = document.createElement('div')
         message.className = `ask-chat-message ask-chat-message-${messageType}`
+        if (pending) message.classList.add('ask-chat-message-pending')
 
         if (messageType === 'bot' && botIconSrc) {
           const icon = document.createElement('img')
@@ -160,6 +163,41 @@ if (backtotop) {
         message.appendChild(text)
         chatLog.appendChild(message)
         chatLog.scrollTop = chatLog.scrollHeight
+        return message
+      }
+
+      const setChatPending = (pending) => {
+        if (!chatInput || !chatSubmit) return
+        chatInput.disabled = pending
+        chatSubmit.disabled = pending
+      }
+
+      const requestPortfolioChat = async (question) => {
+        if (!chatEndpoint) return null
+
+        const response = await fetch(chatEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: question,
+            source: 'portfolio',
+            locale: document.documentElement.lang || 'en'
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error(`Chat request failed with status ${response.status}`)
+        }
+
+        const contentType = response.headers.get('content-type') || ''
+        if (contentType.includes('application/json')) {
+          const data = await response.json()
+          return data.answer || data.message || null
+        }
+
+        return (await response.text()).trim() || null
       }
 
       const updateAssistantRail = () => {
@@ -193,20 +231,29 @@ if (backtotop) {
       }
 
       if (chatForm) {
-        chatForm.addEventListener('submit', (event) => {
+        chatForm.addEventListener('submit', async (event) => {
           event.preventDefault()
           const question = chatInput ? chatInput.value.trim() : ''
           if (!question) return
 
           appendChatMessage(question, 'user')
-          appendChatMessage(profileSummary, 'bot')
-          setTimeout(function() {
-            appendChatMessage(brokenMessage, 'bot')
-            }, 8500);
+          const pendingMessage = appendChatMessage('Thinking', 'bot', true)
+          setChatPending(true)
 
-          if (chatInput) {
-            chatInput.value = ''
-            chatInput.focus()
+          try {
+            const answer = await requestPortfolioChat(question)
+            if (pendingMessage) pendingMessage.remove()
+            appendChatMessage(answer || profileSummary, 'bot')
+          } catch (error) {
+            if (pendingMessage) pendingMessage.remove()
+            appendChatMessage(profileSummary, 'bot')
+            appendChatMessage(brokenMessage, 'bot')
+          } finally {
+            setChatPending(false)
+            if (chatInput) {
+              chatInput.value = ''
+              chatInput.focus()
+            }
           }
         })
       }
@@ -220,7 +267,7 @@ if (backtotop) {
   if (projectCube) {
     const projectGrid = select('[data-project-grid]')
     const cubeletCloud = projectCube.querySelector('[data-cubelet-cloud]')
-    const previewTiles = projectCube.querySelector('[data-project-preview-tiles]')
+    const projectCards = select('.project-card-grid .project-card', true)
     const reduceCubeMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max)
     const lerp = (from, to, amount) => from + (to - from) * amount
@@ -229,13 +276,38 @@ if (backtotop) {
       return x * x * (3 - 2 * x)
     }
     const cubeSize = 3
-    const cubeTargets = [
+    const defaultCubeTargets = [
       [-250, -150], [-84, -150], [84, -150], [250, -150],
       [-250, 0], [-84, 0], [84, 0], [250, 0],
       [-250, 150], [-84, 150], [84, 150], [250, 150],
       [-168, 232], [0, 232], [168, 232]
     ]
+    let cubeTargets = defaultCubeTargets.slice()
     const cubelets = []
+
+    const measureCubeTargets = () => {
+      if (!cubeletCloud || !projectGrid || !projectCards.length) {
+        cubeTargets = defaultCubeTargets.slice()
+        return
+      }
+
+      const gridRect = projectGrid.getBoundingClientRect()
+      const widthSpan = Math.max(gridRect.width, 1)
+      const heightSpan = Math.max(gridRect.height, 1)
+      const horizontalSpread = Math.min(widthSpan * 0.34, 280)
+      const verticalSpread = Math.min(heightSpan * 0.22, 220)
+
+      cubeTargets = projectCards.map((card) => {
+        const cardRect = card.getBoundingClientRect()
+        const centerX = cardRect.left + cardRect.width / 2
+        const centerY = cardRect.top + cardRect.height / 2
+        const relativeX = ((centerX - (gridRect.left + gridRect.width / 2)) / (widthSpan / 2 || 1)) * horizontalSpread
+        const relativeY = ((centerY - (gridRect.top + gridRect.height / 2)) / (heightSpan / 2 || 1)) * verticalSpread
+        return [relativeX, relativeY]
+      })
+
+      if (!cubeTargets.length) cubeTargets = defaultCubeTargets.slice()
+    }
 
     if (cubeletCloud) {
       cubeletCloud.innerHTML = ''
@@ -264,7 +336,6 @@ if (backtotop) {
         const topFace = document.createElement('span')
         const leftFace = document.createElement('span')
         const rightFace = document.createElement('span')
-        const target = cubeTargets[index % cubeTargets.length]
         const ringAngle = index * 2.3999632297
 
         cube.className = 'iso-cubie'
@@ -286,8 +357,7 @@ if (backtotop) {
           joinFromX: Math.cos(ringAngle) * (160 + coord.distance * 16),
           joinFromY: Math.sin(ringAngle) * (106 + coord.distance * 12),
           joinDelay: Math.max(0, coord.distance - 1) * 0.055 + index * 0.004,
-          targetX: target[0] + Math.cos(ringAngle) * 36,
-          targetY: target[1] + Math.sin(ringAngle) * 26
+          ringAngle
         })
       })
       cubeletCloud.appendChild(fragment)
@@ -298,57 +368,45 @@ if (backtotop) {
       if (!projectGrid) return
       projectGrid.style.setProperty('--project-reveal', amount.toFixed(3))
       projectGrid.style.setProperty('--project-opacity', amount.toFixed(3))
-      projectGrid.style.setProperty('--project-blur', `${((1 - amount) * 8).toFixed(2)}px`)
       projectGrid.style.setProperty('--project-offset', `${((1 - amount) * 58).toFixed(1)}px`)
       projectGrid.style.setProperty('--project-scale', (0.96 + amount * 0.04).toFixed(3))
       projectGrid.classList.toggle('is-revealed', amount > 0.04)
     }
 
-    const updateProjectCube = () => {
-      projectCubeFrame = null
-
-      if (reduceCubeMotion) {
-        projectCube.classList.add('is-bursting')
-        if (previewTiles) previewTiles.classList.add('is-visible')
-        setProjectGridReveal(1)
-        return
-      }
-
+    const readProjectProgress = () => {
       const rect = projectCube.getBoundingClientRect()
       const viewportHeight = window.innerHeight || 1
-      const scrollSpan = Math.max(projectCube.offsetHeight - viewportHeight, 1)
-      const progress = clamp((0 - rect.top) / scrollSpan)
+      const scrollSpan = Math.max((projectCube.offsetHeight - viewportHeight)*2, 1)
+      return clamp((0 - rect.top) / scrollSpan)
+    }
+
+    let cubeCurrentProgress = 0
+    let cubeTargetProgress = 0
+    let cubeHasRendered = false
+
+    const renderProjectCube = (progress) => {
       const enterPhase = ease(progress / 0.16)
-      const bouncePhase = clamp((progress - 0.22) / 0.32)
-      const explodePhase = ease((progress - 0.54) / 0.22)
-      const previewRevealPhase = ease((progress - 0.62) / 0.18)
-      const gridRevealPhase = ease((progress - 0.8) / 0.18)
+      const bouncePhase = clamp((progress - 0.2) / 0.55)
+      const explodePhase = ease((progress - 0.75) / 0.25)
+      const gridRevealPhase = ease((progress - 0.75) / 0.1)
       const bounceWave = Math.sin(bouncePhase * Math.PI * 4)
       const bounceFalloff = Math.max(0, 1 - bouncePhase)
-      const bounceY = -Math.abs(bounceWave) * bounceFalloff * 30
+      const bounceY = -Math.abs(bounceWave) * bounceFalloff * 24
       const cloudX = lerp(-28, 0, enterPhase)
       const cloudY = lerp(24, 0, enterPhase) + bounceY
-      const cloudScale = 0.88 + enterPhase * 0.12 + Math.abs(bounceWave) * bounceFalloff * 0.08
-      const cloudOpacity = lerp(0.9, 1, enterPhase) * lerp(1, 0.08, ease((explodePhase - 0.42) / 0.58))
-      const cloudRotate = lerp(-4, 0, enterPhase) + bounceWave * bounceFalloff * 2
+      const cloudScale = 0.88 + enterPhase * 0.12 + Math.abs(bounceWave) * bounceFalloff * 0.06
+      const cloudOpacity = lerp(0.9, 1, enterPhase) * lerp(1, 0, ease((explodePhase - 0.18) / 0.82))
+      const cloudRotate = lerp(-4, 0, enterPhase) + bounceWave * bounceFalloff * 1.4
 
       projectCube.style.setProperty('--cube-progress', progress.toFixed(3))
       projectCube.classList.toggle('is-sliding', progress < 0.2)
-      projectCube.classList.toggle('is-bouncing', progress >= 0.22 && progress < 0.54)
-      projectCube.classList.toggle('is-assembled', progress >= 0.28 && progress < 0.54)
-      projectCube.classList.toggle('is-bursting', explodePhase > 0.04)
+      projectCube.classList.toggle('is-bouncing', progress >= 0.2 && progress < 0.62)
+      projectCube.classList.toggle('is-assembled', progress >= 0.24 && progress < 0.62)
+      projectCube.classList.toggle('is-bursting', explodePhase > 0.01)
 
       if (cubeletCloud) {
         cubeletCloud.style.opacity = cloudOpacity.toFixed(3)
-        cubeletCloud.style.transform = `translate(-50%, -50%) translate3d(${cloudX.toFixed(1)}px, ${cloudY.toFixed(1)}px, 0) scale(${cloudScale.toFixed(3)}) rotate(${cloudRotate.toFixed(2)}deg)`
-      }
-
-      if (previewTiles) {
-        previewTiles.style.setProperty('--project-reveal', previewRevealPhase.toFixed(3))
-        previewTiles.style.setProperty('--preview-opacity', previewRevealPhase.toFixed(3))
-        previewTiles.style.setProperty('--preview-blur', `${((1 - previewRevealPhase) * 10).toFixed(2)}px`)
-        previewTiles.style.setProperty('--preview-offset', `${((1 - previewRevealPhase) * 42).toFixed(1)}px`)
-        previewTiles.classList.toggle('is-visible', previewRevealPhase > 0.04)
+        cubeletCloud.style.transform = `translate3d(${cloudX.toFixed(1)}px, ${cloudY.toFixed(1)}px, 0) scale(${cloudScale.toFixed(3)}) rotate(${cloudRotate.toFixed(2)}deg)`
       }
 
       setProjectGridReveal(gridRevealPhase)
@@ -356,29 +414,64 @@ if (backtotop) {
       cubelets.forEach((cubelet) => {
         const stagger = cubelet.order / Math.max(cubelets.length - 1, 1)
         const cubeAssemble = cubelet.isCore ? 1 : ease((progress - cubelet.joinDelay) / 0.28)
-        const cubeExplode = ease((explodePhase - stagger * 0.16) / 0.84)
+        const cubeExplode = ease((explodePhase - stagger * 0.1) / 0.9)
+        const target = cubeTargets[cubelet.order % cubeTargets.length] || defaultCubeTargets[cubelet.order % defaultCubeTargets.length]
+        const targetX = target[0] + Math.cos(cubelet.ringAngle) * 24
+        const targetY = target[1] + Math.sin(cubelet.ringAngle) * 18
         const assembledX = lerp(cubelet.joinFromX, cubelet.startX, cubeAssemble)
         const assembledY = lerp(cubelet.joinFromY, cubelet.startY, cubeAssemble)
-        const x = lerp(assembledX, cubelet.targetX, cubeExplode)
-        const y = lerp(assembledY, cubelet.targetY, cubeExplode)
+        const x = lerp(assembledX, targetX, cubeExplode)
+        const y = lerp(assembledY, targetY, cubeExplode)
         const depth = 1 + cubelet.startZ * 0.04
-        const scale = depth * lerp(1, 0.68, cubeExplode)
+        const scale = depth * lerp(1, 0.62, cubeExplode)
         const assembleOpacity = cubelet.isCore ? 1 : clamp((progress - cubelet.joinDelay + 0.04) / 0.16)
-        const opacity = assembleOpacity * lerp(1, 0.04, ease((cubeExplode - 0.45) / 0.55))
+        const opacity = assembleOpacity * lerp(1, 0, ease((cubeExplode - 0.36) / 0.64))
 
         cubelet.el.style.opacity = opacity.toFixed(3)
         cubelet.el.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${scale.toFixed(3)})`
       })
     }
 
+    const updateProjectCube = () => {
+      projectCubeFrame = null
+
+      if (reduceCubeMotion) {
+        projectCube.classList.add('is-bursting')
+        setProjectGridReveal(1)
+        return
+      }
+
+      if (!cubeHasRendered) {
+        cubeCurrentProgress = cubeTargetProgress
+        cubeHasRendered = true
+      } else {
+        const progressDelta = cubeTargetProgress - cubeCurrentProgress
+        cubeCurrentProgress += progressDelta * 0.18
+        if (Math.abs(progressDelta) < 0.002) cubeCurrentProgress = cubeTargetProgress
+      }
+
+      renderProjectCube(cubeCurrentProgress)
+
+      if (Math.abs(cubeTargetProgress - cubeCurrentProgress) > 0.002) {
+        projectCubeFrame = window.requestAnimationFrame(updateProjectCube)
+      }
+    }
+
     const requestProjectCubeUpdate = () => {
+      cubeTargetProgress = readProjectProgress()
       if (projectCubeFrame) return
       projectCubeFrame = window.requestAnimationFrame(updateProjectCube)
     }
 
-    window.addEventListener('load', requestProjectCubeUpdate)
-    window.addEventListener('resize', requestProjectCubeUpdate)
+    const updateProjectCubeLayout = () => {
+      measureCubeTargets()
+      requestProjectCubeUpdate()
+    }
+
+    window.addEventListener('load', updateProjectCubeLayout)
+    window.addEventListener('resize', updateProjectCubeLayout)
     onscroll(document, requestProjectCubeUpdate)
+    measureCubeTargets()
     requestProjectCubeUpdate()
   }
 
