@@ -1723,11 +1723,11 @@ body.about-page #experience {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  width: 100%;
   gap: clamp(12px, 2vh, 22px);
   min-height: clamp(420px, calc(100vh - 120px), 620px);
   padding: 0 0 clamp(8px, 1.5vh, 14px);
   overflow: visible;
-  contain: paint;
   transform: translateZ(0);
 }
 

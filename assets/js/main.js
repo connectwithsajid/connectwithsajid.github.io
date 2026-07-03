@@ -110,7 +110,7 @@ if (backtotop) {
     const assistantRailThreshold = 420
     const projectSection = select('#projects')
     const profileSummary = 'Sajid Shaikh engineers the infrastructure behind modern AI products. Combining expertise in data engineering, backend systems, and machine learning, he designs scalable platforms that convert massive volumes of raw data into intelligent, production-ready systems used for analytics, automation, and decision-making.'
-    const brokenMessage = "The live assistant is temporarily unavailable, so here is a quick portfolio summary instead. For deeper discussion, continue on Topmate."
+    const brokenMessage = "The live assistant is temporarily unavailable, please refer to a quick portfolio summary instead. For deeper discussion, continue on Topmate."
     const isProjectShowcaseActive = () => {
       if (!projectSection) return false
       const rect = projectSection.getBoundingClientRect()
@@ -247,7 +247,10 @@ if (backtotop) {
           } catch (error) {
             if (pendingMessage) pendingMessage.remove()
             appendChatMessage(profileSummary, 'bot')
+
+           setTimeout(function() {
             appendChatMessage(brokenMessage, 'bot')
+            }, 8500);
           } finally {
             setChatPending(false)
             if (chatInput) {
