@@ -93,13 +93,65 @@ if (backtotop) {
 }
 
   /**
-   * Auto-collapse profile console after first landing view
+   * Dock VISIC flagship spotlight after first hero reveal
    */
-  const stackConsole = select('.hero-terminal')
-  if (stackConsole && stackConsole.classList.contains('is-open')) {
-    window.setTimeout(() => {
-      stackConsole.classList.remove('is-open')
-    }, 3000)
+  const flagshipSpotlight = select('.flagship-spotlight')
+  if (flagshipSpotlight) {
+    const dockLauncher = flagshipSpotlight.querySelector('.flagship-dock-launcher')
+    const canHoverFlagship = () => window.matchMedia('(min-width: 992px)').matches
+
+    const closeFlagshipPreview = () => {
+      flagshipSpotlight.classList.remove('is-open')
+    }
+
+    const openFlagshipPreview = () => {
+      if (!flagshipSpotlight.classList.contains('is-docked')) return
+      flagshipSpotlight.classList.toggle('is-open')
+    }
+
+    const syncFlagshipDock = () => {
+      if (!canHoverFlagship() && !flagshipSpotlight.dataset.docked) {
+        flagshipSpotlight.classList.add('is-docked')
+        flagshipSpotlight.classList.remove('is-open')
+        flagshipSpotlight.dataset.docked = 'true'
+      }
+
+      if (flagshipSpotlight.dataset.docked) {
+        flagshipSpotlight.classList.add('is-docked')
+        flagshipSpotlight.classList.remove('is-hidden')
+        return
+      }
+
+      if (!flagshipSpotlight.dataset.docked && !flagshipSpotlight.dataset.dockPending) {
+        flagshipSpotlight.dataset.dockPending = 'true'
+        window.setTimeout(() => {
+          flagshipSpotlight.classList.add('is-docked')
+          flagshipSpotlight.classList.remove('is-open')
+          flagshipSpotlight.dataset.docked = 'true'
+          delete flagshipSpotlight.dataset.dockPending
+        }, 3000)
+      }
+    }
+
+    if (dockLauncher) {
+      dockLauncher.addEventListener('click', openFlagshipPreview)
+    }
+
+    flagshipSpotlight.addEventListener('mouseleave', () => {
+      if (canHoverFlagship()) closeFlagshipPreview()
+    })
+
+    document.addEventListener('click', (event) => {
+      if (!flagshipSpotlight.classList.contains('is-docked')) return
+      if (flagshipSpotlight.contains(event.target)) return
+      closeFlagshipPreview()
+    })
+
+    syncFlagshipDock()
+    window.addEventListener('load', syncFlagshipDock)
+    window.addEventListener('resize', syncFlagshipDock)
+    window.addEventListener('scroll', syncFlagshipDock)
+    onscroll(document, syncFlagshipDock)
   }
 
   /**
@@ -204,10 +256,6 @@ if (backtotop) {
         const chatPhase = window.scrollY > assistantRailThreshold
         const projectShowcaseActive = isProjectShowcaseActive()
         const userOpenedChat = askSajidChat.dataset.userOpened === 'true'
-
-        if (stackConsole) {
-          stackConsole.classList.toggle('is-suppressed', chatPhase)
-        }
 
         if (chatPhase) {
           askSajidChat.classList.add('is-visible')
