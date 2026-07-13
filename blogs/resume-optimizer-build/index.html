@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Resume Optimizer: tailoring every application without rewriting the truth | Sajid Shaikh</title>
+  <meta name="description" content="A detailed build log by Sajid Shaikh on building a local-first AI Resume Optimizer that tailors resumes to job descriptions while preserving truth and original LaTeX structure.">
+  <meta name="author" content="Sajid Shaikh">
+  <link rel="canonical" href="https://connectwithsajid.github.io/blogs/resume-optimizer-build/">
+
+  <link href="../../assets/img/ss-favicon.png" rel="icon">
+  <link href="../../assets/img/ss-favicon.png" rel="apple-touch-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="../../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../assets/css/style.css" rel="stylesheet">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Resume Optimizer: tailoring every application without rewriting the truth",
+      "description": "A detailed build log on a local-first AI Resume Optimizer that customizes resumes against job descriptions while preserving evidence and LaTeX structure.",
+      "url": "https://connectwithsajid.github.io/blogs/resume-optimizer-build/",
+      "datePublished": "2026-07-13",
+      "dateModified": "2026-07-13",
+      "author": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "image": "https://connectwithsajid.github.io/assets/img/blog/resume-optimizer-thumbnail.png"
+    }
+  </script>
+</head>
+
+<body class="blog-detail-page">
+  <main class="blog-detail">
+    <a class="blog-back-link" href="../../#blogs"><i class="bi bi-arrow-left"></i> Back to blogs</a>
+
+    <article class="blog-article">
+      <p class="blog-eyebrow">LLM Tooling / Build Log</p>
+      <h1>Resume Optimizer: tailoring every application without rewriting the truth</h1>
+      <div class="blog-post-meta">
+        <span><i class="bi bi-person-badge"></i> Authored by Sajid Shaikh</span>
+        <time datetime="2026-07-13"><i class="bi bi-calendar-event"></i> Posted July 13, 2026</time>
+        <span><i class="bi bi-broadcast-pin"></i> connectwithsajid</span>
+      </div>
+      <p class="blog-dek">
+        This weekend I built an AI-powered Resume Optimizer that tailors a resume to a job description automatically, while keeping every claim truthful and preserving the original LaTeX-driven output.
+      </p>
+
+      <figure class="blog-figure">
+        <img src="../../assets/img/blog/resume-optimizer-thumbnail.png" alt="Resume Optimizer build visual showing PDF input, LaTeX template preservation, AI bullet rewriting, and tailored PDF output">
+      </figure>
+      <hr>
+
+      <h2>The problem I wanted to solve</h2>
+      <p>
+        People often say you should tailor your resume for every role. They are right. A backend platform role, a data engineering role, and an AI tooling role all emphasize different evidence, even when they come from the same career story.
+      </p>
+      <p>
+        The issue is not whether tailoring is useful. The issue is that doing it manually for every single application is slow, repetitive, and easy to get wrong. Valuable projects disappear, keyword coverage drifts, and the final document often loses the structure that made it strong in the first place.
+      </p>
+      <p>
+        I did not want a gimmick that simply rewrites everything with inflated language. I wanted a repeatable engineering pipeline that could preserve evidence, optimize selectively, and still hand back a clean, ATS-friendly resume artifact.
+      </p>
+
+      <h2>What the Resume Optimizer takes in</h2>
+      <ul class="blog-checklist">
+        <li><strong>Your resume</strong> in PDF or LaTeX form.</li>
+        <li><strong>A job description</strong> for the exact role you are targeting.</li>
+        <li><strong>Past resume versions</strong> so earlier but still-relevant evidence can be surfaced again when needed.</li>
+      </ul>
+
+      <p>
+        That third input ended up being one of the most important parts of the system. Resumes evolve over time, and old versions often contain strong bullets, projects, or skill phrasing that quietly vanish as priorities shift. I wanted the optimizer to remember that history instead of treating the latest version as the only source of truth.
+      </p>
+
+      <h2>The pipeline behind the scenes</h2>
+      <p>
+        Under the hood, the tool is structured like a small local AI workflow rather than a one-shot prompt.
+      </p>
+
+      <h3>1. Extract only the sections worth optimizing</h3>
+      <p>
+        The first step is not “rewrite the resume.” It is figuring out which sections are actually candidates for change. Experience bullets, project descriptions, and summary sections can be optimized. Contact info, layout, dates, and the broader structure should stay intact.
+      </p>
+
+      <h3>2. Analyze the job description for signal, not just keywords</h3>
+      <p>
+        The optimizer looks for required skills, repeated terminology, engineering themes, and role expectations. That means it is not only collecting keywords like Python, AWS, or RAG. It is also identifying patterns such as platform ownership, distributed systems, experimentation, local tooling, analytics workflows, or product-minded execution.
+      </p>
+
+      <h3>3. Revisit prior resume versions for buried evidence</h3>
+      <p>
+        This is the feature I am happiest with. Instead of trusting a single uploaded resume as the full record, the tool revisits earlier resume versions to recover accomplishments that may still matter for the target role. That allows the optimizer to resurface the best evidence for a given application rather than letting good material disappear over time.
+      </p>
+
+      <blockquote>
+        <p>The goal is not to invent experience. The goal is to recover the right evidence from experience you already have.</p>
+      </blockquote>
+
+      <h3>4. Rewrite only the relevant bullets with an LLM</h3>
+      <p>
+        Once the candidate sections and supporting evidence are assembled, the LLM rewrites only the bullets that benefit from tailoring. The rest of the resume remains unchanged. That selective approach matters because it keeps the document grounded and reduces the chance of unnecessary drift.
+      </p>
+      <p>
+        I used GPT mini in my implementation, but the architecture is model-agnostic. You can swap in the LLM provider of your choice as long as it can follow the constraints of evidence-preserving rewriting.
+      </p>
+
+      <h3>5. Rebuild the final artifact using the original LaTeX template</h3>
+      <p>
+        Many tools stop at rewritten text. I wanted the pipeline to return a polished final document, not just an intermediate draft. So after optimization, the system regenerates the final resume using the original LaTeX template and exports a finished PDF. That keeps formatting, spacing, and overall presentation consistent with the source version.
+      </p>
+
+      <h2>Why local-first mattered</h2>
+      <p>
+        I intentionally built this as a local-first system:
+      </p>
+      <ul class="blog-checklist">
+        <li><strong>No cloud deployment</strong> required.</li>
+        <li><strong>No hosting</strong> required.</li>
+        <li><strong>No forced upload pipeline</strong> for sensitive resume data.</li>
+        <li><strong>Run everything on your own machine</strong> with the provider and model you prefer.</li>
+      </ul>
+
+      <p>
+        Resumes contain personal data, work history, company names, and role context. Keeping that workflow local was not just a convenience choice. It was part of the trust model.
+      </p>
+
+      <h2>What I wanted this to be from an engineering perspective</h2>
+      <p>
+        Most resume tools are positioned as text helpers. I approached this as an engineering pipeline with constraints:
+      </p>
+      <ul class="blog-checklist">
+        <li><strong>Evidence-preserving</strong> so the system never drifts into fabricated claims.</li>
+        <li><strong>Section-wise optimization</strong> so only relevant parts change.</li>
+        <li><strong>ATS-friendly output</strong> so the final PDF still behaves like a real resume artifact.</li>
+        <li><strong>Template preservation</strong> so the original structure and polish remain intact.</li>
+        <li><strong>Model-agnostic architecture</strong> so the workflow is not coupled to one provider.</li>
+      </ul>
+
+      <h2>Why I think this matters</h2>
+      <p>
+        The interesting part is not just that an LLM can rewrite bullets. The interesting part is that resume tailoring can be turned into a controlled pipeline with clear boundaries: what can change, what cannot change, what evidence is allowed, and how the final document gets regenerated.
+      </p>
+      <p>
+        That same pattern shows up in a lot of practical AI systems. The value is rarely the model alone. The value comes from how you structure inputs, constrain transformations, preserve truth, and produce a reliable output that fits a real workflow.
+      </p>
+
+      <h2>Where to find it</h2>
+      <p>
+        If you want to inspect the implementation, the repository is here: <a href="https://github.com/connectwithsajid/resume-optimizer">connectwithsajid/resume-optimizer</a>.
+      </p>
+      <p>
+        You can also explore more AI builds, backend systems, and applied engineering work across the rest of <a href="https://connectwithsajid.github.io/">connectwithsajid</a>.
+      </p>
+
+      <p class="blog-cta">
+        I am always open to feedback and collaborations on practical AI systems that solve real problems. If this kind of tooling resonates with you, reach out through <a href="https://connectwithsajid.github.io/">connectwithsajid.github.io</a>.
+      </p>
+
+      <ul class="blog-tags">
+        <li>AI</li>
+        <li>LLM</li>
+        <li>Resume</li>
+        <li>Python</li>
+        <li>Automation</li>
+        <li>LaTeX</li>
+        <li>Build In Public</li>
+        <li>Local First</li>
+      </ul>
+    </article>
+
+    <section class="blog-comments" aria-label="Comments and reactions">
+      <div class="comments-header">
+        <span>Discussion</span>
+        <h2>React or ask a follow-up</h2>
+        <p>Comments and reactions are powered by GitHub Discussions under the connectwithsajid brand.</p>
+      </div>
+      <script src="https://giscus.app/client.js"
+              data-repo="connectwithsajid/blog-comments"
+              data-repo-id="R_kgDOTCfWzA"
+              data-category="Blog Comments"
+              data-category-id="DIC_kwDOTCfWzM4C_tbu"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="preferred_color_scheme"
+              data-lang="en"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+  </main>
+</body>
+
+</html>
