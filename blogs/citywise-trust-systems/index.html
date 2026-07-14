@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>CityWise and Resume Optimizer: AI systems built around trust, translation, and evidence | Sajid Shaikh</title>
+  <meta name="description" content="A build log by Sajid Shaikh on CityWise and Resume Optimizer, two AI systems designed around truth-preserving translation, structured retrieval, and production trust.">
+  <meta name="author" content="Sajid Shaikh">
+  <link rel="canonical" href="https://connectwithsajid.github.io/blogs/citywise-trust-systems/">
+
+  <link href="../../assets/img/ss-favicon.png" rel="icon">
+  <link href="../../assets/img/ss-favicon.png" rel="apple-touch-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="../../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../assets/css/style.css" rel="stylesheet">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "CityWise and Resume Optimizer: AI systems built around trust, translation, and evidence",
+      "description": "A build log on CityWise and Resume Optimizer, two AI systems built to preserve truth while translating complex inputs into usable outputs.",
+      "url": "https://connectwithsajid.github.io/blogs/citywise-trust-systems/",
+      "datePublished": "2026-07-14",
+      "dateModified": "2026-07-14",
+      "author": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "image": "https://connectwithsajid.github.io/assets/img/citywise-preview.png"
+    }
+  </script>
+</head>
+
+<body class="blog-detail-page">
+  <main class="blog-detail">
+    <a class="blog-back-link" href="../../#blogs"><i class="bi bi-arrow-left"></i> Back to blogs</a>
+
+    <article class="blog-article">
+      <p class="blog-eyebrow">Production AI Systems / Build Log</p>
+      <h1>CityWise and Resume Optimizer: AI systems built around trust, translation, and evidence</h1>
+      <div class="blog-post-meta">
+        <span><i class="bi bi-person-badge"></i> Authored by Sajid Shaikh</span>
+        <time datetime="2026-07-14"><i class="bi bi-calendar-event"></i> Posted July 14, 2026</time>
+        <span><i class="bi bi-broadcast-pin"></i> connectwithsajid</span>
+      </div>
+      <p class="blog-dek">
+        Two very different AI products taught me the same lesson: the hard part is rarely generation alone. The real work is building systems that can simplify complexity without breaking trust.
+      </p>
+
+      <figure class="blog-figure">
+        <img src="../../assets/img/citywise-preview.png" alt="CityWise application preview showing civic information translated into a clear public-facing experience">
+      </figure>
+      <hr>
+
+      <h2>Two systems, one design principle</h2>
+      <p>
+        Lately I have been thinking a lot about what makes an AI system actually useful in production. Not impressive in a demo. Not clever in isolation. Useful.
+      </p>
+      <p>
+        The pattern I keep coming back to is this: people do not really want generated text. They want reliable translation from complexity into clarity. They want answers they can act on. They want outputs that stay grounded in the source material.
+      </p>
+      <p>
+        That principle shows up in two projects I have been especially proud of: <strong>CityWise</strong>, a production civic AI system used by LA City Council members, and my <strong>AI Resume Optimizer</strong>, a structured local-first pipeline for tailoring resumes against specific job descriptions.
+      </p>
+      <p>
+        On the surface they look unrelated. One translates public policy and council records for residents. The other translates a career history into role-specific evidence. But the engineering challenge underneath is surprisingly similar: take dense source material, retrieve the right evidence, simplify it for a real user, and make sure the simplification never drifts away from the truth.
+      </p>
+
+      <h2>CityWise: turning council records into answers people actually understand</h2>
+      <p>
+        CityWise, at <a href="https://citywise.app/">citywise.app</a>, is a production system I built as the founding AI engineer at Visic. It is now used by LA City Council members, which means the bar is not “interesting output.” The bar is trust, clarity, and repeatability in a civic context where people need to understand what government records actually say.
+      </p>
+      <p>
+        The problem it solves is not really a retrieval problem. It is a translation problem.
+      </p>
+      <p>
+        Council records, ordinances, and public documents are written in dense procedural language. They are full of references, legal phrasing, and institutional structure that make sense inside government workflows but feel distant from how a resident would naturally think or ask a question. A person does not ask, “Can you summarize ordinance subsection X in its procedural context?” They ask, “Why is this happening in my neighborhood?” or “What does this vote actually mean for me?”
+      </p>
+      <p>
+        So the system goal was never just “find a paragraph.” The goal was to make unstructured government data speak the truth in plain language, without losing accuracy along the way.
+      </p>
+
+      <h3>The two-agent architecture</h3>
+      <p>
+        The core of CityWise is a two-agent architecture.
+      </p>
+      <ul class="blog-checklist">
+        <li><strong>Generator agent:</strong> retrieves the most relevant context using pgvector ANN retrieval with colocated embeddings, then drafts a plain-language response.</li>
+        <li><strong>Judge agent:</strong> validates that response against the retrieved source before it ever reaches a user.</li>
+      </ul>
+      <p>
+        That second step matters a lot. If you want an AI system to simplify language, you also need a mechanism that checks whether the simplification preserved the meaning. Otherwise “clearer” can quietly become “wrong.”
+      </p>
+      <blockquote>
+        <p>Simplifying language should never mean distorting facts.</p>
+      </blockquote>
+
+      <h3>Concurrency and observability were part of the product, not extras</h3>
+      <p>
+        Both agents run through FastAPI's async support, which lets the pipeline handle concurrent execution cleanly in production. That helped me keep the system responsive without treating the architecture like a toy.
+      </p>
+      <p>
+        I also instrumented the workflow with Langfuse for production observability. That part is easy to underestimate until a real system is live. Once users are asking meaningful questions, you need to know exactly why an answer was produced, which retrieval path was used, what evidence came back, and where drift might be starting to appear.
+      </p>
+      <p>
+        Observability is what turns an LLM feature into an operable system. Without traces, you are stuck arguing from intuition. With traces, you can inspect, debug, and improve systematically.
+      </p>
+
+      <h3>The stack</h3>
+      <p>
+        CityWise is built end to end on:
+      </p>
+      <ul class="blog-checklist">
+        <li><strong>LangChain</strong> for orchestration.</li>
+        <li><strong>Azure OpenAI</strong> for model access.</li>
+        <li><strong>pgvector</strong> for retrieval with colocated embeddings.</li>
+        <li><strong>FastAPI</strong> for async service architecture.</li>
+        <li><strong>Docker</strong> for runtime packaging.</li>
+        <li><strong>GitHub Actions</strong> for CI/CD.</li>
+        <li><strong>Langfuse</strong> for production tracing and drift visibility.</li>
+      </ul>
+      <p>
+        From ingestion to deployment, I owned the AI platform solo as the only engineer on that system. That meant the design decisions had to work not just conceptually, but operationally.
+      </p>
+
+      <h2>Resume Optimizer: structured output across providers, without trusting the model's own grading</h2>
+      <p>
+        The AI Resume Optimizer came from a much more personal frustration. Tailoring a resume for every role is tedious, and most “AI resume tools” solve that by asking a model to rewrite everything and then grade how well it did.
+      </p>
+      <p>
+        I do not trust that pattern very much.
+      </p>
+      <p>
+        A model grading its own output is noisy and inconsistent between runs. The same resume and same job description can produce different match scores depending on wording, provider behavior, or randomness in the generation path. That is not a strong foundation if you want the score to mean something concrete.
+      </p>
+
+      <h3>Provider-agnostic, section-wise, and structured</h3>
+      <p>
+        So I built the pipeline differently. The system is provider-agnostic across Groq, OpenAI, and Anthropic, using FastAPI and LangChain as the orchestration layer. The first step converts the resume into structured JSON. From there, each section can be optimized against a specific job description independently rather than as one monolithic rewrite.
+      </p>
+      <p>
+        That structure matters because different parts of a resume play different roles. A summary should not be optimized the same way as a project bullet. A project section should not be treated like contact metadata. Once the resume becomes a structured artifact, the optimization can be much more controlled.
+      </p>
+
+      <h3>Historical resume retrieval</h3>
+      <p>
+        The pipeline also indexes historical resume versions and retrieves the most contextually relevant past experience for a given job description. That helps recover strong evidence that may have disappeared from the latest draft even though it is still highly relevant to the target role.
+      </p>
+      <p>
+        This turned out to be one of the most valuable parts of the system because resumes are lossy documents over time. They change shape to fit past priorities. A role-specific optimizer should be able to recover the strongest supporting evidence across that history, not just accept the latest file as complete.
+      </p>
+
+      <h3>The deterministic match score</h3>
+      <p>
+        The part I am proudest of is the scoring design.
+      </p>
+      <p>
+        Instead of asking the model to self-report how well the resume matches a role, I built a weighted evidence retrieval system that computes a deterministic resume-job match score from actual retrieved evidence. In other words, the score is grounded in what the system was able to find and support, not in the model's mood on a given run.
+      </p>
+      <p>
+        That means the score carries the same meaning regardless of which provider generated the rewritten output. It is not perfect because no scoring system is, but it is much more stable and interpretable than asking a generative model to grade itself.
+      </p>
+
+      <h2>What these systems have in common</h2>
+      <p>
+        CityWise and Resume Optimizer live in different domains, but the deeper design pattern is the same.
+      </p>
+      <ul class="blog-checklist">
+        <li><strong>Start with dense source material</strong> that is not naturally usable by the end user.</li>
+        <li><strong>Retrieve the right evidence</strong> instead of relying on freeform recall.</li>
+        <li><strong>Translate into user-facing language</strong> that matches how people actually ask questions.</li>
+        <li><strong>Add a trust layer</strong> so the system can justify or validate what it says.</li>
+        <li><strong>Instrument the workflow</strong> so production debugging is possible.</li>
+      </ul>
+      <p>
+        That is the kind of AI engineering work I enjoy most. Not just putting a model behind an interface, but designing a system where retrieval, validation, structure, and observability work together to make the output trustworthy.
+      </p>
+
+      <h2>Why this matters to me</h2>
+      <p>
+        I care a lot about practical AI systems. Systems that do not stop at “the model said something plausible,” but instead make it possible to answer harder questions:
+      </p>
+      <ul class="blog-checklist">
+        <li>What evidence did this answer come from?</li>
+        <li>What part of the pipeline generated this output?</li>
+        <li>How do we know the simplification preserved the source truth?</li>
+        <li>How do we make the result stable across providers and over time?</li>
+      </ul>
+      <p>
+        Whether the user is a city resident trying to understand council action or a candidate trying to present relevant experience clearly, the trust question is the same. The model is only one part of the story. The system around it is what makes the output dependable.
+      </p>
+
+      <p class="blog-cta">
+        If you are building AI products where retrieval, validation, and structured outputs actually matter, I would love to connect through <a href="https://connectwithsajid.github.io/">connectwithsajid.github.io</a>.
+      </p>
+
+      <ul class="blog-tags">
+        <li>AI</li>
+        <li>RAG</li>
+        <li>LangChain</li>
+        <li>FastAPI</li>
+        <li>pgvector</li>
+        <li>Observability</li>
+        <li>Langfuse</li>
+        <li>Structured Output</li>
+      </ul>
+    </article>
+
+    <section class="blog-comments" aria-label="Comments and reactions">
+      <div class="comments-header">
+        <span>Discussion</span>
+        <h2>React or ask a follow-up</h2>
+        <p>Comments and reactions are powered by GitHub Discussions under the connectwithsajid brand.</p>
+      </div>
+      <script src="https://giscus.app/client.js"
+              data-repo="connectwithsajid/blog-comments"
+              data-repo-id="R_kgDOTCfWzA"
+              data-category="Blog Comments"
+              data-category-id="DIC_kwDOTCfWzM4C_tbu"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="preferred_color_scheme"
+              data-lang="en"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+  </main>
+</body>
+
+</html>
