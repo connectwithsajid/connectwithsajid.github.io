@@ -23,20 +23,31 @@
           <p class="masthead-copy">
             Upload a video, extract its speech, generate a Groq Orpheus voice, and render a downloadable video in your browser.
           </p>
+          <div class="masthead-actions">
+            <a class="hero-action hero-action-primary" href="#voiceover-tool">Try it yourself</a>
+            <a class="hero-action hero-action-secondary" href="../blogs/ai-voice-over-build/">Read build log</a>
+          </div>
         </div>
 
-        <a class="creator-preview" href="https://connectwithsajid.github.io/" target="_blank" rel="noreferrer" aria-label="Open connectwithsajid portfolio">
+        <div class="creator-preview hero-signal-card" aria-hidden="true">
           <span class="creator-label">
-            connectwithsajid
-            <i class="bi bi-box-arrow-up-right"></i>
+            Creator signal
+            <i class="bi bi-stars"></i>
           </span>
-          <span class="creator-frame" aria-hidden="true">
-            <iframe loading="lazy" src="../" title="connectwithsajid preview"></iframe>
+          <span class="creator-frame hero-signal-frame">
+            <span class="hero-signal-grid"></span>
+            <span class="hero-signal-orbit hero-signal-orbit-one"></span>
+            <span class="hero-signal-orbit hero-signal-orbit-two"></span>
+            <span class="hero-signal-wave hero-signal-wave-one"></span>
+            <span class="hero-signal-wave hero-signal-wave-two"></span>
+            <span class="hero-signal-core">
+              <i class="bi bi-mic-fill"></i>
+            </span>
           </span>
-        </a>
+        </div>
       </header>
 
-      <div class="tool-grid">
+      <div class="tool-grid" id="voiceover-tool">
         <section class="panel input-panel" aria-label="AI voiceover setup">
           <div class="panel-header">
             <div>
@@ -112,7 +123,7 @@
           </label>
 
           <div class="action-row">
-            <button class="primary-action" data-generate type="button">Extract audio and generate</button>
+            <button class="primary-action" data-generate type="button">Generate AI voice</button>
             <button class="secondary-action" data-render type="button" disabled>Render video</button>
             <button class="secondary-action" data-cancel type="button" disabled>Cancel</button>
           </div>
@@ -180,6 +191,16 @@
         </section>
       </div>
     </section>
+    <footer class="tool-footer">
+      <div class="tool-footer-inner">
+        <div class="tool-footer-copy">
+          &copy; <strong>connectwithsajid</strong>
+        </div>
+        <div class="tool-footer-credits">
+          Designed and built by <a href="https://www.linkedin.com/in/connectwithsajid/" rel="noreferrer" target="_blank">Sajid Shaikh</a>
+        </div>
+      </div>
+    </footer>
   </main>
 
   <script src="app.js"></script>

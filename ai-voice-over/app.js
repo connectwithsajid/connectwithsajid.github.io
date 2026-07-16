@@ -78,8 +78,9 @@ function setError(message) {
 }
 
 function setBusy(isBusy) {
-  el.generate.disabled = isBusy || !state.videoFile;
-  el.render.disabled = isBusy || !state.generatedAudioBlob;
+  const hasTranscript = Boolean(el.transcript.value.trim());
+  el.generate.disabled = isBusy || (!state.videoFile && !hasTranscript);
+  el.render.disabled = isBusy || !state.generatedAudioBlob || !state.videoFile;
   el.cancel.disabled = !state.isRendering;
 }
 
@@ -325,7 +326,9 @@ async function generateSpeech(apiKey, transcript) {
 }
 
 async function generateAiVoice() {
-  if (!state.videoFile) {
+  const transcriptInput = el.transcript.value.trim();
+
+  if (!state.videoFile && !transcriptInput) {
     return;
   }
 
@@ -344,7 +347,7 @@ async function generateAiVoice() {
   setBusy(true);
   setError("");
   setProgress(0);
-  setStatus(el.transcript.value.trim() ? "Generating AI voice" : "Extracting audio");
+  setStatus(transcriptInput ? "Generating AI voice" : "Extracting audio");
   clearObjectUrl("generatedAudioUrl");
   clearObjectUrl("resultUrl");
   state.generatedAudioBlob = null;
@@ -353,7 +356,7 @@ async function generateAiVoice() {
   el.complete.hidden = true;
 
   try {
-    let transcript = el.transcript.value.trim();
+    let transcript = transcriptInput;
 
     if (!transcript) {
       const audioFile = await extractAudioFromVideo(state.videoFile, (ratio) => {
@@ -382,9 +385,9 @@ async function generateAiVoice() {
     state.generatedAudioUrl = URL.createObjectURL(audioBlob);
 
     el.audioPreview.src = state.generatedAudioUrl;
-    el.audioName.textContent = `${state.videoFile.name.replace(/\.[^.]+$/, "") || "voiceover"}-ai.wav`;
+    el.audioName.textContent = `${(state.videoFile?.name || "voiceover").replace(/\.[^.]+$/, "") || "voiceover"}-ai.wav`;
     el.audioCard.hidden = false;
-    el.render.disabled = false;
+    el.render.disabled = !state.videoFile;
     setProgress(0.65);
     setStatus("AI voice ready");
   } catch (error) {
@@ -553,15 +556,11 @@ async function renderVideo() {
 
 function handleVideo(file) {
   clearObjectUrl("videoUrl");
-  clearObjectUrl("generatedAudioUrl");
   clearObjectUrl("resultUrl");
 
   state.videoFile = file || null;
-  state.generatedAudioBlob = null;
-  el.audioCard.hidden = true;
   el.downloadCard.hidden = true;
   el.complete.hidden = true;
-  el.transcript.value = "";
   setProgress(0);
   setError("");
 
@@ -571,7 +570,7 @@ function handleVideo(file) {
     el.videoSize.textContent = "--";
     el.previewVideo.removeAttribute("src");
     el.emptyState.hidden = false;
-    setStatus("Waiting for video");
+    setStatus(el.transcript.value.trim() ? "Transcript ready" : "Add video or transcript");
     setBusy(false);
     return;
   }
@@ -582,9 +581,16 @@ function handleVideo(file) {
   el.fileName.textContent = file.name;
   el.videoSize.textContent = formatSize(file.size);
   el.emptyState.hidden = true;
-  setStatus("Video ready");
+  setStatus(state.generatedAudioBlob ? "Ready to render" : "Video ready");
   setBusy(false);
 }
+
+el.transcript.addEventListener("input", () => {
+  if (!state.videoFile && !state.generatedAudioBlob) {
+    setStatus(el.transcript.value.trim() ? "Transcript ready" : "Add video or transcript");
+  }
+  setBusy(false);
+});
 
 el.videoInput.addEventListener("change", (event) => {
   handleVideo(event.target.files && event.target.files[0]);
