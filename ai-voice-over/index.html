@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>AI Voice Over | connectwithsajid</title>
+  <meta name="description" content="Browser-based AI voice-over tool that extracts speech from a video, generates a Groq Orpheus voice, and renders a downloadable video.">
+
+  <link href="../assets/img/ss-favicon.png" rel="icon">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <main class="app-shell">
+    <section class="workspace">
+      <header class="masthead">
+        <div class="masthead-content">
+          <a class="back-link" href="../"><i class="bi bi-arrow-left"></i> Portfolio</a>
+          <p class="eyebrow">AI Voice Over</p>
+          <h1>Turn video speech into an AI voice</h1>
+          <p class="masthead-copy">
+            Upload a video, extract its speech, generate a Groq Orpheus voice, and render a downloadable video in your browser.
+          </p>
+        </div>
+
+        <a class="creator-preview" href="https://connectwithsajid.github.io/" target="_blank" rel="noreferrer" aria-label="Open connectwithsajid portfolio">
+          <span class="creator-label">
+            connectwithsajid
+            <i class="bi bi-box-arrow-up-right"></i>
+          </span>
+          <span class="creator-frame" aria-hidden="true">
+            <iframe loading="lazy" src="../" title="connectwithsajid preview"></iframe>
+          </span>
+        </a>
+      </header>
+
+      <div class="tool-grid">
+        <section class="panel input-panel" aria-label="AI voiceover setup">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Input</p>
+              <h2>Video source</h2>
+            </div>
+            <span class="status-pill" data-status>Waiting for video</span>
+          </div>
+
+          <label class="upload-tile">
+            <input accept="video/mp4,video/webm,video/*" type="file" data-video-input>
+            <span class="upload-icon" aria-hidden="true">V</span>
+            <span>
+              <strong>Video with speech</strong>
+              <small data-file-name>Choose a video; audio will be extracted first</small>
+            </span>
+          </label>
+
+          <div class="metadata-grid">
+            <div class="stat-box">
+              <span>Duration</span>
+              <strong data-video-duration>--:--</strong>
+            </div>
+            <div class="stat-box">
+              <span>Size</span>
+              <strong data-video-size>--</strong>
+            </div>
+            <div class="stat-box">
+              <span>Output</span>
+              <strong data-output-type>MP4/WebM</strong>
+            </div>
+          </div>
+
+          <label class="key-field">
+            <span>Groq API key</span>
+            <input data-api-key autocomplete="off" placeholder="gsk_..." type="password">
+          </label>
+
+          <label class="toggle-control">
+            <input data-remember-key type="checkbox">
+            <span>Remember key on this device</span>
+          </label>
+
+          <div class="control-grid">
+            <label>
+              <span>AI voice</span>
+              <select data-voice>
+                <option value="austin">Austin</option>
+                <option value="hannah">Hannah</option>
+                <option value="troy">Troy</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Transcription hint</span>
+              <input data-prompt placeholder="Names, acronyms, language, or context" type="text">
+            </label>
+          </div>
+
+          <label class="text-control">
+            <span>Voice direction</span>
+            <textarea data-instructions>clear, natural, polished presenter voice</textarea>
+          </label>
+
+          <label class="text-control">
+            <span>Transcript</span>
+            <textarea data-transcript placeholder="Optional: paste or edit transcript here. If this is empty, the video audio will be transcribed first."></textarea>
+          </label>
+
+          <label class="toggle-control">
+            <input data-fit-voice checked type="checkbox">
+            <span>Fit generated voice duration to the video when rendering</span>
+          </label>
+
+          <div class="action-row">
+            <button class="primary-action" data-generate type="button">Extract audio and generate</button>
+            <button class="secondary-action" data-render type="button" disabled>Render video</button>
+            <button class="secondary-action" data-cancel type="button" disabled>Cancel</button>
+          </div>
+
+          <p class="helper-message">
+            Your key is used from this browser only. GitHub Pages cannot hide API keys, so use a restricted or disposable key for public demos.
+          </p>
+
+          <div class="progress-shell" aria-label="Processing progress">
+            <span data-progress></span>
+          </div>
+
+          <p class="error-message" data-error hidden></p>
+        </section>
+
+        <section class="panel preview-panel" aria-label="Preview and output">
+          <div class="panel-header">
+            <div>
+              <p class="section-label">Output</p>
+              <h2>AI voice video</h2>
+            </div>
+            <span class="status-pill done" data-complete hidden>Complete</span>
+          </div>
+
+          <div class="video-frame">
+            <video data-preview-video playsinline></video>
+            <div class="empty-state" data-empty-state>Video preview</div>
+          </div>
+
+          <div class="preview-controls" aria-label="Video preview controls">
+            <button data-play aria-label="Play preview" title="Play" type="button">
+              <i class="bi bi-play-fill"></i>
+            </button>
+            <button data-mute aria-label="Mute preview" title="Mute" type="button">
+              <i class="bi bi-volume-up-fill"></i>
+            </button>
+            <label class="volume-control">
+              <span class="sr-only">Volume</span>
+              <input data-volume max="1" min="0" step="0.05" type="range" value="0.8">
+            </label>
+            <button data-fullscreen aria-label="Open preview fullscreen" title="Fullscreen" type="button">
+              <i class="bi bi-fullscreen"></i>
+            </button>
+          </div>
+
+          <div class="audio-card" data-audio-card hidden>
+            <div>
+              <span>Generated audio</span>
+              <strong data-audio-name>AI voice ready</strong>
+            </div>
+            <audio data-audio-preview controls></audio>
+          </div>
+
+          <div class="download-card" data-download-card hidden>
+            <div>
+              <span>Download</span>
+              <strong data-output-name>ai-voice-video.mp4</strong>
+              <small data-output-size></small>
+            </div>
+            <a class="download-action" data-download href="#" download>
+              <i class="bi bi-download"></i>
+              Save video
+            </a>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
