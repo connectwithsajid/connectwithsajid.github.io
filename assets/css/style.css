@@ -1916,6 +1916,85 @@ body.about-page #experience {
   padding: 4px 0 8px;
 }
 
+.github-stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.github-stat-pill {
+  min-height: 82px;
+  padding: 14px 16px;
+  background: rgba(12, 16, 19, 0.42);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.github-stat-pill span,
+.github-chart-header,
+.github-language-meta {
+  color: rgba(238, 243, 239, 0.58);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.github-stat-pill strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--soft);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.github-chart-panel {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(12, 16, 19, 0.42);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.github-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.github-chart-header strong {
+  color: var(--teal-2);
+  letter-spacing: 0.03em;
+}
+
+.github-activity-chart {
+  min-height: 250px;
+}
+
+.github-activity-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.github-chart-empty,
+.github-language-row.is-empty {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  color: rgba(238, 243, 239, 0.58);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: center;
+  background: rgba(8, 10, 13, 0.36);
+  border: 1px dashed rgba(238, 243, 239, 0.14);
+  border-radius: 8px;
+}
+
 .github-heatmap {
   display: grid;
   grid-auto-flow: column;
@@ -2008,6 +2087,58 @@ body.about-page #experience {
   color: rgba(238, 243, 239, 0.58);
   font-family: var(--mono);
   font-size: 12px;
+}
+
+.github-language-card {
+  min-height: 100%;
+}
+
+.github-language-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.github-language-row {
+  display: grid;
+  gap: 8px;
+}
+
+.github-language-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.github-language-header strong {
+  color: var(--soft);
+  font-size: 16px;
+}
+
+.github-language-header span {
+  color: var(--copper);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.github-language-track {
+  overflow: hidden;
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.github-language-bar {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.github-language-meta {
+  letter-spacing: 0.04em;
 }
 
 .skill-console {
@@ -3653,6 +3784,10 @@ body.about-page #experience {
     grid-auto-columns: 10px;
     gap: 3px;
     padding: 10px;
+  }
+
+  .github-stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .contribution-cell {

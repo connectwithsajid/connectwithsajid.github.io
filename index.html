@@ -634,25 +634,49 @@
         </div>
 
         <div class="row gy-4 align-items-stretch">
-          <div class="col-lg-7" data-aos="fade-up">
-            <article class="github-arcade-card">
+          <div class="col-lg-8" data-aos="fade-up">
+            <article class="github-arcade-card github-stats-card">
               <div class="arcade-topbar">
                 <div>
                   <span>connectwithsajid/github</span>
-                  <h3>Contribution Snake</h3>
+                  <h3>GitHub Activity</h3>
                 </div>
                 <div class="arcade-actions">
-                  <button class="arcade-control" type="button" data-github-action="toggle" aria-label="Pause contribution snake">
-                    <i class="bi bi-pause-fill"></i>
-                  </button>
                   <a class="arcade-control" href="https://github.com/connectwithsajid/" aria-label="Open GitHub profile" title="Open GitHub">
                     <i class="bi bi-box-arrow-up-right"></i>
                   </a>
                 </div>
               </div>
 
+              <div class="github-stat-strip" data-github-summary>
+                <div class="github-stat-pill">
+                  <span>30d Contributions</span>
+                  <strong>--</strong>
+                </div>
+                <div class="github-stat-pill">
+                  <span>365d Contributions</span>
+                  <strong>--</strong>
+                </div>
+                <div class="github-stat-pill">
+                  <span>Longest Streak</span>
+                  <strong>--</strong>
+                </div>
+                <div class="github-stat-pill">
+                  <span>Public Repos</span>
+                  <strong>--</strong>
+                </div>
+              </div>
+
+              <div class="github-chart-panel">
+                <div class="github-chart-header">
+                  <span>Last 30 days</span>
+                  <strong data-github-generated>Awaiting GitHub sync</strong>
+                </div>
+                <div class="github-activity-chart" data-github-activity-chart aria-label="GitHub contribution activity chart"></div>
+              </div>
+
               <div class="github-heatmap-shell">
-                <div class="github-heatmap" role="grid" aria-label="Interactive contribution-style technical skill map"></div>
+                <div class="github-heatmap" role="grid" aria-label="GitHub contribution heatmap"></div>
               </div>
 
               <div class="github-legend" aria-label="Contribution intensity legend">
@@ -665,33 +689,26 @@
                 <span>More</span>
               </div>
 
-              <p class="arcade-note">
-                Built as an interactive contribution-style layer. The production version can hydrate this grid from a nightly GitHub Actions export of real contribution data.
+              <p class="arcade-note" data-github-note>
+                Hydrated from a scheduled GitHub Actions export of real contribution and repository language data.
               </p>
             </article>
           </div>
 
-          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
-            <aside class="skill-console">
-              <span class="console-label">deep_dive.json</span>
-              <h3 data-skill-title>AI Data Platforms</h3>
-              <p data-skill-body>
-                Production pipelines, validation, observability, and analytics-ready datasets for systems where downstream decisions need trustworthy data.
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <aside class="skill-console github-language-card">
+              <span class="console-label">github-insights.json</span>
+              <h3>Top Languages</h3>
+              <p data-github-languages-body>
+                Aggregated from public repositories and refreshed through GitHub Actions, so this stays tied to what is actually in GitHub rather than a hardcoded skill list.
               </p>
-              <div class="skill-readout" data-skill-tags>
-                <span>AWS Glue</span>
-                <span>PySpark</span>
-                <span>Schema validation</span>
+              <div class="github-language-list" data-github-language-list>
+                <div class="github-language-row is-empty">
+                  <span>Waiting for GitHub data</span>
+                </div>
               </div>
-              <div class="skill-tabs" aria-label="Technical deep dive controls">
-                <button class="active" type="button" data-skill="data">Data</button>
-                <button type="button" data-skill="ai">AI/RAG</button>
-                <button type="button" data-skill="backend">Backend</button>
-                <button type="button" data-skill="devops">DevOps</button>
-                <button type="button" data-skill="research">Research</button>
-              </div>
-              <a class="skill-console-link" href="#projects">
-                Inspect projects <i class="bi bi-arrow-down-right"></i>
+              <a class="skill-console-link" href="https://github.com/connectwithsajid?tab=repositories">
+                Inspect repositories <i class="bi bi-arrow-up-right"></i>
               </a>
             </aside>
           </div>

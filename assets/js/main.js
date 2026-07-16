@@ -527,138 +527,183 @@ if (backtotop) {
   }
 
   /**
-   * GitHub contribution-style skill explorer
+   * GitHub stats and languages explorer
    */
   const githubLab = select('.github-lab')
   if (githubLab) {
     const heatmap = select('.github-heatmap')
-    const skillTitle = select('[data-skill-title]')
-    const skillBody = select('[data-skill-body]')
-    const skillTags = select('[data-skill-tags]')
-    const skillTabs = select('.skill-tabs button', true)
-    const arcadeToggle = select('[data-github-action="toggle"]')
-    const skillProfiles = {
-      data: {
-        title: 'AI Data Platforms',
-        body: 'Production pipelines, validation, observability, and analytics-ready datasets for systems where downstream decisions need trustworthy data.',
-        tags: ['AWS Glue', 'PySpark', 'Databricks', 'Data quality', '500K+ records']
-      },
-      ai: {
-        title: 'AI, RAG, and Multimodal Systems',
-        body: 'NLP text mining, RAG context optimization, image captioning, model evaluation, and vision-language workflows that turn unstructured data into usable signals.',
-        tags: ['RAG', 'BLIP-2', 'LLaVA', 'VizWiz', 'Model evals']
-      },
-      backend: {
-        title: 'Backend and Distributed Systems',
-        body: 'REST APIs, Java actor systems, graph query engines, schema design, authentication, and production interfaces around messy data.',
-        tags: ['Flask APIs', 'Java actors', 'PostgreSQL', 'Graph analytics', 'Auth']
-      },
-      devops: {
-        title: 'DevOps and Release Discipline',
-        body: 'CI/CD guardrails, Docker builds, type checks, linting, tests, and deployment workflows that keep fast AI-assisted development reliable.',
-        tags: ['CI/CD', 'Docker', 'Unit tests', 'Type checks', 'Zero downtime']
-      },
-      research: {
-        title: 'Applied Research and Experimentation',
-        body: 'Research-minded engineering across document corpora, text mining, benchmark design, caption metrics, and dataset preparation for AI systems.',
-        tags: ['NLP', 'PDF mining', 'BLEU', 'ROUGE', 'METEOR']
-      }
-    }
-    const skillKeys = Object.keys(skillProfiles)
-    const cells = []
-    let selectedCell = null
-    let snakeIndex = 24
-    let isPlaying = true
+    const summaryRoot = select('[data-github-summary]')
+    const chartRoot = select('[data-github-activity-chart]')
+    const generatedRoot = select('[data-github-generated]')
+    const noteRoot = select('[data-github-note]')
+    const languageList = select('[data-github-language-list]')
 
-    const updateSkill = (key, cell) => {
-      const profile = skillProfiles[key] || skillProfiles.data
-      if (skillTitle) skillTitle.textContent = profile.title
-      if (skillBody) skillBody.textContent = profile.body
-      if (skillTags) {
-        skillTags.innerHTML = ''
-        profile.tags.forEach((tag) => {
-          const tagEl = document.createElement('span')
-          tagEl.textContent = tag
-          skillTags.appendChild(tagEl)
-        })
-      }
-      skillTabs.forEach((tab) => {
-        tab.classList.toggle('active', tab.dataset.skill === key)
-      })
-      if (selectedCell) selectedCell.classList.remove('is-selected')
-      if (cell) {
-        selectedCell = cell
-        selectedCell.classList.add('is-selected')
-      }
+    const defaultData = {
+      username: 'connectwithsajid',
+      generated_at: null,
+      summary: {
+        public_repo_count: 0,
+        total_contributions_30d: 0,
+        total_contributions_365d: 0,
+        longest_streak: 0
+      },
+      contribution_days: [],
+      top_languages: []
     }
 
-    if (heatmap) {
-      for (let week = 0; week < 52; week++) {
-        for (let day = 0; day < 7; day++) {
-          const index = week * 7 + day
-          const key = skillKeys[(week + day) % skillKeys.length]
-          const level = ((week * 3 + day * 5 + index) % 9) > 6 ? 4 : (week + day) % 5
-          const cell = document.createElement('button')
-          cell.type = 'button'
-          cell.className = `contribution-cell level-${level}`
-          cell.dataset.skill = key
-          cell.setAttribute('role', 'gridcell')
-          cell.setAttribute('aria-label', `Contribution signal ${index + 1}: ${skillProfiles[key].title}`)
-          cell.addEventListener('mouseenter', () => updateSkill(key, cell))
-          cell.addEventListener('focus', () => updateSkill(key, cell))
-          cell.addEventListener('click', () => {
-            updateSkill(key, cell)
-            isPlaying = false
-            if (arcadeToggle) {
-              arcadeToggle.setAttribute('aria-label', 'Play contribution snake')
-              arcadeToggle.innerHTML = '<i class="bi bi-play-fill"></i>'
-            }
-          })
-          heatmap.appendChild(cell)
-          cells.push(cell)
-        }
-      }
-    }
+    const numberFormat = new Intl.NumberFormat('en-US')
+    const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
-    const renderSnake = () => {
-      if (!cells.length) return
-      cells.forEach((cell) => {
-        cell.classList.remove('is-snake-head', 'is-snake-trail')
-      })
-      for (let trail = 0; trail < 9; trail++) {
-        const cell = cells[(snakeIndex - trail + cells.length) % cells.length]
-        cell.classList.add(trail === 0 ? 'is-snake-head' : 'is-snake-trail')
-      }
-      const head = cells[snakeIndex]
-      if (head) updateSkill(head.dataset.skill, head)
-      snakeIndex = (snakeIndex + 5) % cells.length
-    }
+    const renderSummary = (data) => {
+      if (!summaryRoot) return
+      const summary = data.summary || defaultData.summary
+      const items = [
+        { label: '30d Contributions', value: summary.total_contributions_30d || 0 },
+        { label: '365d Contributions', value: summary.total_contributions_365d || 0 },
+        { label: 'Longest Streak', value: `${summary.longest_streak || 0}d` },
+        { label: 'Public Repos', value: summary.public_repo_count || 0 }
+      ]
 
-    skillTabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const target = cells.find((cell) => cell.dataset.skill === tab.dataset.skill)
-        updateSkill(tab.dataset.skill, target)
-        isPlaying = false
-        if (arcadeToggle) {
-          arcadeToggle.setAttribute('aria-label', 'Play contribution snake')
-          arcadeToggle.innerHTML = '<i class="bi bi-play-fill"></i>'
-        }
-      })
-    })
-
-    if (arcadeToggle) {
-      arcadeToggle.addEventListener('click', () => {
-        isPlaying = !isPlaying
-        arcadeToggle.setAttribute('aria-label', `${isPlaying ? 'Pause' : 'Play'} contribution snake`)
-        arcadeToggle.innerHTML = `<i class="bi bi-${isPlaying ? 'pause' : 'play'}-fill"></i>`
-        if (isPlaying) selectedCell = null
+      summaryRoot.innerHTML = ''
+      items.forEach((item) => {
+        const pill = document.createElement('div')
+        pill.className = 'github-stat-pill'
+        pill.innerHTML = `<span>${item.label}</span><strong>${item.value}</strong>`
+        summaryRoot.appendChild(pill)
       })
     }
 
-    renderSnake()
-    window.setInterval(() => {
-      if (isPlaying) renderSnake()
-    }, 620)
+    const renderActivityChart = (days) => {
+      if (!chartRoot) return
+      if (!days.length) {
+        chartRoot.innerHTML = '<div class="github-chart-empty">GitHub activity will render here after the first Actions sync.</div>'
+        return
+      }
+
+      const recent = days.slice(-30)
+      const width = 720
+      const height = 240
+      const padding = { top: 18, right: 16, bottom: 34, left: 34 }
+      const innerWidth = width - padding.left - padding.right
+      const innerHeight = height - padding.top - padding.bottom
+      const maxCount = Math.max(...recent.map((day) => day.count), 1)
+      const ticks = [0, Math.ceil(maxCount / 3), Math.ceil((2 * maxCount) / 3), maxCount]
+      const points = recent.map((day, index) => {
+        const x = padding.left + (innerWidth * index) / Math.max(recent.length - 1, 1)
+        const y = padding.top + innerHeight - (day.count / maxCount) * innerHeight
+        return { ...day, x, y }
+      })
+      const polyline = points.map((point) => `${point.x},${point.y}`).join(' ')
+
+      const yLabels = ticks.map((tick) => {
+        const y = padding.top + innerHeight - (tick / maxCount) * innerHeight
+        return `
+          <line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="rgba(238,243,239,0.08)" stroke-dasharray="4 6" />
+          <text x="${padding.left - 10}" y="${y + 4}" fill="rgba(238,243,239,0.48)" font-size="10" font-family="'IBM Plex Mono', monospace" text-anchor="end">${tick}</text>
+        `
+      }).join('')
+
+      const xLabels = points.filter((_, index) => index % 5 === 0 || index === points.length - 1).map((point) => {
+        const dayLabel = new Date(point.date).getDate()
+        return `<text x="${point.x}" y="${height - 10}" fill="rgba(238,243,239,0.48)" font-size="10" font-family="'IBM Plex Mono', monospace" text-anchor="middle">${dayLabel}</text>`
+      }).join('')
+
+      const circles = points.map((point) => `
+        <circle cx="${point.x}" cy="${point.y}" r="3.5" fill="#9bc8bd">
+          <title>${point.date}: ${point.count} contributions</title>
+        </circle>
+      `).join('')
+
+      chartRoot.innerHTML = `
+        <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="GitHub contributions for the last 30 days">
+          <rect x="0" y="0" width="${width}" height="${height}" rx="12" fill="rgba(17, 22, 33, 0.72)"></rect>
+          ${yLabels}
+          <polyline fill="none" stroke="#7aa8ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${polyline}"></polyline>
+          ${circles}
+          ${xLabels}
+        </svg>
+      `
+    }
+
+    const contributionLevel = (count, maxCount) => {
+      if (count <= 0) return 0
+      if (maxCount <= 1) return 4
+      const ratio = count / maxCount
+      if (ratio < 0.25) return 1
+      if (ratio < 0.5) return 2
+      if (ratio < 0.75) return 3
+      return 4
+    }
+
+    const renderHeatmap = (days) => {
+      if (!heatmap) return
+      heatmap.innerHTML = ''
+      if (!days.length) return
+
+      const maxCount = Math.max(...days.map((day) => day.count), 1)
+      days.forEach((day) => {
+        const cell = document.createElement('button')
+        cell.type = 'button'
+        cell.className = `contribution-cell level-${contributionLevel(day.count, maxCount)}`
+        cell.setAttribute('role', 'gridcell')
+        cell.setAttribute('aria-label', `${day.date}: ${day.count} contributions`)
+        cell.title = `${day.date}: ${day.count} contributions`
+        heatmap.appendChild(cell)
+      })
+    }
+
+    const renderLanguages = (languages) => {
+      if (!languageList) return
+      languageList.innerHTML = ''
+
+      if (!languages.length) {
+        languageList.innerHTML = '<div class="github-language-row is-empty"><span>Top languages will appear after the first GitHub Actions export.</span></div>'
+        return
+      }
+
+      languages.slice(0, 6).forEach((language) => {
+        const row = document.createElement('div')
+        row.className = 'github-language-row'
+        const percent = typeof language.percentage === 'number' ? language.percentage : 0
+        const color = language.color || '#9bc8bd'
+        row.innerHTML = `
+          <div class="github-language-header">
+            <strong>${language.name}</strong>
+            <span>${percent.toFixed(1)}%</span>
+          </div>
+          <div class="github-language-track">
+            <div class="github-language-bar" style="width:${Math.max(percent, 2)}%; background:${color};"></div>
+          </div>
+          <div class="github-language-meta">${numberFormat.format(language.bytes || 0)} bytes across public repos</div>
+        `
+        languageList.appendChild(row)
+      })
+    }
+
+    const applyGitHubData = (data) => {
+      renderSummary(data)
+      renderActivityChart(data.contribution_days || [])
+      renderHeatmap(data.contribution_days || [])
+      renderLanguages(data.top_languages || [])
+
+      if (generatedRoot) {
+        generatedRoot.textContent = data.generated_at
+          ? `Synced ${dateFormatter.format(new Date(data.generated_at))}`
+          : 'Awaiting GitHub sync'
+      }
+
+      if (noteRoot && data.generated_at) {
+        noteRoot.textContent = `Hydrated from GitHub on ${dateFormatter.format(new Date(data.generated_at))} using a scheduled Actions export of contribution and language data.`
+      }
+    }
+
+    fetch('assets/data/github-insights.json', { cache: 'no-store' })
+      .then((response) => {
+        if (!response.ok) throw new Error(`GitHub insights request failed: ${response.status}`)
+        return response.json()
+      })
+      .then((data) => applyGitHubData({ ...defaultData, ...data }))
+      .catch(() => applyGitHubData(defaultData))
   }
 
   /**
