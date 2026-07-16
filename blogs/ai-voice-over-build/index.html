@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>AI Voice Over: building a custom speech replacement tool for social-first video | Sajid Shaikh</title>
+  <meta name="description" content="A build log by Sajid Shaikh on creating a browser-first AI Voice Over tool that transcribes video speech with Groq, generates Orpheus voice audio, and renders a new downloadable video.">
+  <meta name="author" content="Sajid Shaikh">
+  <link rel="canonical" href="https://connectwithsajid.github.io/blogs/ai-voice-over-build/">
+
+  <link href="../../assets/img/ss-favicon.png" rel="icon">
+  <link href="../../assets/img/ss-favicon.png" rel="apple-touch-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="../../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../../assets/css/style.css" rel="stylesheet">
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "AI Voice Over: building a custom speech replacement tool for social-first video",
+      "description": "A build log on a browser-first tool that transcribes video speech with Groq, generates Orpheus voice audio, and renders a downloadable AI voiceover video.",
+      "url": "https://connectwithsajid.github.io/blogs/ai-voice-over-build/",
+      "datePublished": "2026-07-16",
+      "dateModified": "2026-07-16",
+      "author": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Sajid Shaikh",
+        "url": "https://connectwithsajid.github.io/"
+      },
+      "image": "https://connectwithsajid.github.io/assets/img/blog/ai-voice-over.png"
+    }
+  </script>
+</head>
+
+<body class="blog-detail-page">
+  <main class="blog-detail">
+    <a class="blog-back-link" href="../../#blogs"><i class="bi bi-arrow-left"></i> Back to blogs</a>
+
+    <article class="blog-article">
+      <p class="blog-eyebrow">Audio AI / Build Log</p>
+      <h1>AI Voice Over: building a custom speech replacement tool for social-first video</h1>
+      <div class="blog-post-meta">
+        <span><i class="bi bi-person-badge"></i> Authored by Sajid Shaikh</span>
+        <time datetime="2026-07-16"><i class="bi bi-calendar-event"></i> Posted July 16, 2026</time>
+        <span><i class="bi bi-broadcast-pin"></i> connectwithsajid</span>
+      </div>
+      <p class="blog-dek">
+        A week ago, a close point of contact started a new business. The digital media quality was strong, but the voiceover was not landing with the audience. That gap is what pushed me to build a custom AI voice replacement workflow instead of relying on another black-box tool.
+      </p>
+
+      <figure class="blog-figure">
+        <img src="../../assets/img/blog/ai-voice-over.png" alt="AI Voice Over application showing uploaded source video, Groq voice settings, and rendered AI voice video output">
+      </figure>
+      <hr>
+
+      <h2>Why I built this at all</h2>
+      <p>
+        About a week ago, someone close to me launched a business. The visual side of the content was already in good shape. The editing felt polished, the media had energy, and the presentation looked ready for social platforms. But the voice did not feel equally strong, and that matters more than people admit.
+      </p>
+      <p>
+        On short-form and social-first platforms, weak narration can quietly hurt retention, replay value, and shareability. People may not consciously say “the voice is the problem,” but they still scroll away if the delivery feels flat, unclear, or disconnected from the quality of the visual content.
+      </p>
+      <p>
+        That was the moment I decided to build this tool.
+      </p>
+      <p>
+        Yes, there are already many optimized commercial solutions in the market. But I still wanted to make my own. I wanted complete control over the workflow, the prompt surface, the rendering pipeline, and the developer experience. I also wanted something that could stay lightweight, local-first in feel, and easy to adapt for different use cases instead of forcing everything through a generic SaaS flow.
+      </p>
+
+      <h2>The user flow I wanted</h2>
+      <p>
+        The product goal was simple on the surface:
+      </p>
+      <ul class="blog-checklist">
+        <li>Upload a video that already contains speech.</li>
+        <li>Extract only the speech audio from that video.</li>
+        <li>Transcribe what was said.</li>
+        <li>Generate a cleaner AI voice from that transcript.</li>
+        <li>Render the new voice back onto the original video.</li>
+        <li>Download the finished output directly in the browser.</li>
+      </ul>
+      <p>
+        The harder part was making that flow feel practical and dependable without turning it into a heavy backend media service.
+      </p>
+
+      <h2>The technical shape of the system</h2>
+      <p>
+        The app is built as a browser-first workflow on top of Next.js 16, React 19, and a server route that talks to Groq. I used a very intentional split of responsibilities:
+      </p>
+      <ul class="blog-checklist">
+        <li><strong>The browser handles media preparation and final rendering.</strong></li>
+        <li><strong>The server route handles speech understanding and speech generation.</strong></li>
+        <li><strong>The whole interaction stays fast and direct.</strong></li>
+      </ul>
+
+      <h3>1. Audio extraction happens in the browser</h3>
+      <p>
+        Instead of uploading the raw video immediately, the client first extracts an audio-only file from the selected video. That happens using browser media APIs and MediaRecorder, which gives a lighter payload for transcription and avoids unnecessary media transfer.
+      </p>
+      <p>
+        Under the hood, the app loads the uploaded video into a hidden media element, routes its audio through a MediaStream destination, records that stream, and packages the result as a new extracted-audio file. This step also let me put a guardrail around transcription size, since direct uploads to model providers can be sensitive to account tier and multipart overhead.
+      </p>
+      <p>
+        I capped automatic transcription at a safer extracted-audio size of 20 MB. If the media exceeds that, the app fails gracefully and tells the user to shorten or compress the input, or provide the transcript manually.
+      </p>
+
+      <h3>2. Groq handles both understanding and voice generation</h3>
+      <p>
+        Once the browser has the extracted speech track, the Next.js API route sends it to Groq transcription using <strong>whisper-large-v3-turbo</strong>. After transcription, the same route sends the transcript into Groq speech generation using <strong>canopylabs/orpheus-v1-english</strong>.
+      </p>
+      <p>
+        The nice part of this setup is that the transcript is not hidden from the user. The tool lets the user review and edit the transcript before rendering if needed. That matters because brand names, acronyms, and domain-specific terms often need a second pass, especially for business content.
+      </p>
+      <p>
+        I also added a <strong>transcription hint</strong> field so users can feed names, acronyms, or contextual language into the transcription step. That reduces avoidable errors in exactly the places where social media voice content tends to be least forgiving.
+      </p>
+
+      <h3>3. Voice direction is a real control surface, not a hidden prompt</h3>
+      <p>
+        One design choice I cared about was exposing voice direction clearly. The user can specify a tone like “clear, natural, polished presenter voice,” and that guidance is prepended into the speech request rather than buried inside code. It gives the tool more of a creative direction surface instead of behaving like a fixed one-click converter.
+      </p>
+      <p>
+        This makes the system more adaptable for different use cases, from business explainers to more conversational social clips.
+      </p>
+
+      <h3>4. The rendered video is rebuilt entirely in the browser</h3>
+      <p>
+        After the AI voice is generated, the app does not send the full video to a remote rendering backend. It rebuilds the output in the browser.
+      </p>
+      <p>
+        The rendering step works by drawing the original video frames onto a canvas, capturing that canvas stream, then combining it with the generated AI audio through the Web Audio API. From there, MediaRecorder records the combined stream into a downloadable output file.
+      </p>
+      <p>
+        In practice, that means the rendering stack uses:
+      </p>
+      <ul class="blog-checklist">
+        <li><strong>canvas.captureStream</strong> for frame output,</li>
+        <li><strong>Web Audio</strong> for the generated voice track,</li>
+        <li><strong>MediaRecorder</strong> for final file creation.</li>
+      </ul>
+      <p>
+        That approach keeps the product lightweight and removes the need for a custom cloud rendering service for the first version.
+      </p>
+
+      <h3>5. Fitting voice duration back to video length</h3>
+      <p>
+        One subtle but important implementation detail is timing. A generated voice track does not always match the original video duration exactly. To make the final output feel more usable, I added an option to fit the generated voice duration back to the original video length by adjusting playback rate within a bounded range.
+      </p>
+      <p>
+        That keeps the final output closer to the original edit timing instead of forcing the user to manually re-cut every clip.
+      </p>
+
+      <h2>What I liked about building this myself</h2>
+      <p>
+        Commercial tools often optimize for scale, but they also hide too much. Building this myself gave me full ownership over:
+      </p>
+      <ul class="blog-checklist">
+        <li>how media gets preprocessed,</li>
+        <li>how transcripts are surfaced and corrected,</li>
+        <li>how the voice direction is controlled,</li>
+        <li>how the final media is rendered,</li>
+        <li>and how errors are communicated back to the user.</li>
+      </ul>
+      <p>
+        It also let me make the tool browser-first and creator-friendly. The user uploads a file, chooses a voice, optionally nudges the transcript, and gets back a new downloadable video without needing a complicated editing workflow.
+      </p>
+
+      <h2>What this project reminded me</h2>
+      <p>
+        I like building practical AI systems most when they solve a very specific real-world pain point. In this case, the problem was not “can we generate speech?” It was “can we improve the perceived quality of business content quickly enough that someone can actually use it in their workflow?”
+      </p>
+      <p>
+        That difference matters. The useful part of AI is not the model in isolation. It is the pipeline around the model: the extraction, the control points, the rendering, the constraints, and the final output that fits how people actually work.
+      </p>
+
+      <p class="blog-cta">
+        If you are working on creator tooling, audio workflows, or practical AI products that need to feel fast and production-aware, I would love to connect through <a href="https://connectwithsajid.github.io/">connectwithsajid.github.io</a>.
+      </p>
+
+      <ul class="blog-tags">
+        <li>AI</li>
+        <li>Audio</li>
+        <li>Groq</li>
+        <li>Speech to Text</li>
+        <li>Text to Speech</li>
+        <li>Next.js</li>
+        <li>Browser APIs</li>
+        <li>Build In Public</li>
+      </ul>
+    </article>
+
+    <section class="blog-comments" aria-label="Comments and reactions">
+      <div class="comments-header">
+        <span>Discussion</span>
+        <h2>React or ask a follow-up</h2>
+        <p>Comments and reactions are powered by GitHub Discussions under the connectwithsajid brand.</p>
+      </div>
+      <script src="https://giscus.app/client.js"
+              data-repo="connectwithsajid/blog-comments"
+              data-repo-id="R_kgDOTCfWzA"
+              data-category="Blog Comments"
+              data-category-id="DIC_kwDOTCfWzM4C_tbu"
+              data-mapping="pathname"
+              data-strict="0"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="bottom"
+              data-theme="preferred_color_scheme"
+              data-lang="en"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+    <footer id="footer">
+      <div class="container">
+        <div class="copyright">
+          &copy; <strong><span>connectwithsajid</span></strong>
+        </div>
+        <div class="credits">
+          Designed and built by <a href="https://www.linkedin.com/in/connectwithsajid/">Sajid Shaikh</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+
+</html>
