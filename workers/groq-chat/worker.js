@@ -1,3 +1,15 @@
+import { retrieveChunks, formatRetrievedContext } from './retrieve.js'
+
+const SYSTEM_PROMPT = [
+  'You are the portfolio assistant for Sajid Shaikh.',
+  'Answer using only the retrieved portfolio context below.',
+  'Keep answers concise, helpful, and professional.',
+  'Prefer specific projects, roles, metrics, and links from the context when relevant.',
+  'Mention Topmate only when the user asks about mentorship, resume review, consulting, or booking time.',
+  'If the answer is uncertain or not covered by the context, say so plainly instead of inventing details.',
+  'You may answer in English or Spanish to match the user.'
+].join(' ')
+
 export default {
   async fetch(request, env) {
     const corsHeaders = {
@@ -23,6 +35,15 @@ export default {
     }
 
     try {
+      if (!env.GROQ_API_KEY) {
+        return Response.json({
+          error: 'GROQ_API_KEY is not configured'
+        }, {
+          status: 500,
+          headers: corsHeaders
+        })
+      }
+
       const body = await request.json()
       const question = (body.message || '').trim()
 
@@ -35,22 +56,9 @@ export default {
         })
       }
 
-      const systemPrompt = [
-        'You are the portfolio assistant for Sajid Shaikh.',
-        'Answer using only the portfolio context you were given.',
-        'Keep answers concise, helpful, and professional.',
-        'Mention Topmate only when the user asks about mentorship, resume review, or booking time.',
-        'If the answer is uncertain, say so plainly instead of inventing details.'
-      ].join(' ')
-
-      const profileContext = [
-        'Sajid Shaikh is an AI and Data Engineer and a USC Computer Science alumnus.',
-        'He works across data engineering, backend systems, machine learning, RAG-ready document processing, NLP text mining, computer vision, graph analytics, PostgreSQL query optimization, AWS pipelines, Flask APIs, Java systems, CI/CD, and production data validation.',
-        'He builds scalable systems that convert raw data into reliable analytics, automation, and decision platforms.',
-        'Projects include multimodal assistive AI, X-GastroAI, clinical data pipelines, distributed graph analytics, PostgreSQL optimization, and backend data tooling.',
-        'He welcomes questions in English or Spanish.',
-        'For mentorship or consulting, his Topmate is https://topmate.io/connectwithsajid.'
-      ].join(' ')
+      const topK = Number(env.RAG_TOP_K || 4)
+      const retrieval = retrieveChunks(question, { topK })
+      const retrievedContext = formatRetrievedContext(retrieval.chunks)
 
       const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -61,11 +69,11 @@ export default {
         body: JSON.stringify({
           model: env.GROQ_MODEL || 'llama-3.1-8b-instant',
           temperature: 0.35,
-          max_tokens: 300,
+          max_tokens: 350,
           messages: [
             {
               role: 'system',
-              content: `${systemPrompt}\n\nPortfolio context:\n${profileContext}`
+              content: `${SYSTEM_PROMPT}\n\nRetrieved portfolio context:\n${retrievedContext}`
             },
             {
               role: 'user',
@@ -88,13 +96,40 @@ export default {
 
       const groqData = await groqResponse.json()
       const answer = groqData.choices?.[0]?.message?.content?.trim()
+        || 'The assistant could not generate a response just now.'
+      const sources = retrieval.chunks.map((chunk) => chunk.id)
 
-      return Response.json({
-        answer: answer || 'The assistant could not generate a response just now.'
-      }, {
+      // Structured log for Workers Logs / Log Explorer.
+      console.log(JSON.stringify({
+        event: 'portfolio_chat',
+        question,
+        sources,
+        answer,
+        source: body.source || null,
+        locale: body.locale || null
+      }))
+
+      const payload = {
+        answer,
+        sources
+      }
+
+      if (body.debug === true) {
+        payload.debug = {
+          queryTokens: retrieval.queryTokens,
+          scores: retrieval.scores
+        }
+      }
+
+      return Response.json(payload, {
         headers: corsHeaders
       })
     } catch (error) {
+      console.error(JSON.stringify({
+        event: 'portfolio_chat_error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }))
+
       return Response.json({
         error: 'Unexpected server error',
         details: error instanceof Error ? error.message : 'Unknown error'
