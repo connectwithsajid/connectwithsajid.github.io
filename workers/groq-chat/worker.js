@@ -67,7 +67,7 @@ export default {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: env.GROQ_MODEL || 'llama-3.1-8b-instant',
+          model: env.GROQ_MODEL || 'openai/gpt-oss-20b',
           temperature: 0.35,
           max_tokens: 350,
           messages: [

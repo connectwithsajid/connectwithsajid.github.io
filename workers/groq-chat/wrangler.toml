@@ -6,11 +6,11 @@ compatibility_date = "2024-11-01"
 #   npx wrangler secret put GROQ_API_KEY
 #
 # Optional vars:
-#   GROQ_MODEL=llama-3.1-8b-instant
+#   GROQ_MODEL=openai/gpt-oss-20b
 #   RAG_TOP_K=4
 
 [vars]
-GROQ_MODEL = "llama-3.1-8b-instant"
+GROQ_MODEL = "openai/gpt-oss-20b"
 RAG_TOP_K = "4"
 
 # Persist console.log output so you can inspect user questions in the dashboard.

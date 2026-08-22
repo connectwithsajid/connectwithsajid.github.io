@@ -19,7 +19,7 @@ To update what the chatbot knows, edit `knowledge.js` and redeploy the Worker.
 ## Required secrets
 
 - `GROQ_API_KEY`
-- `GROQ_MODEL` (optional, default `llama-3.1-8b-instant`)
+- `GROQ_MODEL` (optional, default `openai/gpt-oss-20b`)
 - `RAG_TOP_K` (optional, default `4`)
 
 ## Request shape
